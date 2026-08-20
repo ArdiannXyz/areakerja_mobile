@@ -17,7 +17,6 @@ import 'features/auth/presentation/bloc/auth_bloc.dart';
 import 'features/auth/presentation/bloc/auth_event.dart';
 import 'features/auth/presentation/bloc/auth_state.dart';
 import 'features/auth/presentation/pages/login_page.dart';
-import 'features/kandidat/presentation/pages/dashboard_kandidat_page.dart';
 import 'features/pelamar/presentation/pages/dashboard_pelamar_page.dart';
 import 'features/perusahaan/presentation/pages/dashboard_perusahaan_page.dart';
 
@@ -113,7 +112,6 @@ class _SplashAuthDecider extends StatelessWidget {
             case UserRole.perusahaan:
               return const DashboardPerusahaanPage();
             case UserRole.kandidat:
-              return const DashboardKandidatPage();
             case UserRole.admin:
             case UserRole.pelamar:
             default:

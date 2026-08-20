@@ -87,11 +87,7 @@ class _LoginPageState extends State<LoginPage> {
                 Navigator.of(context).pushReplacementNamed('/dashboard-perusahaan');
                 break;
               case UserRole.kandidat:
-                Navigator.of(context).pushReplacementNamed('/dashboard-kandidat');
-                break;
               case UserRole.admin:
-                Navigator.of(context).pushReplacementNamed('/dashboard-admin');
-                break;
               case UserRole.pelamar:
               default:
                 Navigator.of(context).pushReplacementNamed('/dashboard-pelamar');

@@ -80,23 +80,27 @@ class _DashboardPelamarPageState extends State<DashboardPelamarPage> {
               _buildNavItem(
                 index: 0,
                 label: 'Beranda',
-                icon: Icons.home_filled,
+                activeIcon: Icons.home_filled,
+                inactiveIcon: Icons.home_outlined,
                 isHome: true,
               ),
               _buildNavItem(
                 index: 1,
                 label: 'Lowongan Ke..',
-                icon: Icons.business_center_outlined,
+                activeIcon: Icons.business_center_rounded,
+                inactiveIcon: Icons.business_center_outlined,
               ),
               _buildNavItem(
                 index: 2,
                 label: 'Daftar Kandi..',
-                icon: Icons.people_outline_rounded,
+                activeIcon: Icons.diversity_3_rounded,
+                inactiveIcon: Icons.diversity_3_outlined,
               ),
               _buildNavItem(
                 index: 3,
                 label: 'Profil',
-                icon: Icons.person_outline_rounded,
+                activeIcon: Icons.person_rounded,
+                inactiveIcon: Icons.person_outline_rounded,
               ),
             ],
           ),
@@ -108,7 +112,8 @@ class _DashboardPelamarPageState extends State<DashboardPelamarPage> {
   Widget _buildNavItem({
     required int index,
     required String label,
-    required IconData icon,
+    required IconData activeIcon,
+    required IconData inactiveIcon,
     bool isHome = false,
   }) {
     final isSelected = _currentIndex == index;
@@ -134,7 +139,7 @@ class _DashboardPelamarPageState extends State<DashboardPelamarPage> {
               )
             else
               Icon(
-                icon,
+                isSelected ? activeIcon : inactiveIcon,
                 color: isSelected ? activeColor : inactiveColor,
                 size: 24,
               ),
@@ -278,203 +283,211 @@ class _BerandaHomeViewState extends State<_BerandaHomeView> {
 
   // --- 1. Top Orange Header ---
   Widget _buildOrangeHeader(BuildContext context, String userName) {
-    return Stack(
-      children: [
-        // Orange Container Background with Decorative Circles
-        Container(
-          width: double.infinity,
-          padding: EdgeInsets.only(
-            top: MediaQuery.of(context).padding.top + 16,
-            left: 20,
-            right: 20,
-            bottom: 24,
-          ),
-          decoration: const BoxDecoration(
-            color: Color(0xFFFF5E14),
-            borderRadius: BorderRadius.only(
-              bottomLeft: Radius.circular(0),
-              bottomRight: Radius.circular(0),
+    return Container(
+      color: const Color(0xFFFF5E14),
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          // 1. Background decorative circles (IgnorePointer so they never block taps)
+          Positioned(
+            top: -30,
+            right: -20,
+            child: IgnorePointer(
+              child: Container(
+                width: 140,
+                height: 140,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.white.withValues(alpha: 0.08),
+                ),
+              ),
             ),
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Greeting & Notification Row
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          _getGreeting(),
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                        const SizedBox(height: 2),
-                        Text(
-                          userName,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 22,
-                            fontWeight: FontWeight.bold,
-                            letterSpacing: -0.2,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ],
-                    ),
-                  ),
-                  // Notification Bell with Red Dot Badge
-                  BlocBuilder<NotifikasiBloc, NotifikasiState>(
-                    builder: (context, notifState) {
-                      final hasUnread = notifState is NotifikasiLoaded && notifState.unreadCount > 0;
+          Positioned(
+            top: 30,
+            left: -40,
+            child: IgnorePointer(
+              child: Container(
+                width: 160,
+                height: 160,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.white.withValues(alpha: 0.07),
+                ),
+              ),
+            ),
+          ),
 
-                      return InkWell(
-                        onTap: () => Navigator.of(context).pushNamed('/notifikasi'),
-                        borderRadius: BorderRadius.circular(20),
-                        child: Stack(
-                          clipBehavior: Clip.none,
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.all(8),
-                              child: const Icon(
-                                Icons.notifications_outlined,
-                                color: Colors.white,
-                                size: 30,
+          // 2. Main Header Content
+          Padding(
+            padding: EdgeInsets.only(
+              top: MediaQuery.of(context).padding.top + 16,
+              left: 20,
+              right: 20,
+              bottom: 24,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Greeting & Notification Row
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            _getGreeting(),
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            userName,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: -0.2,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
+                      ),
+                    ),
+                    // Notification Bell with Red Dot Badge
+                    BlocBuilder<NotifikasiBloc, NotifikasiState>(
+                      builder: (context, notifState) {
+                        final hasUnread = notifState is NotifikasiLoaded && notifState.unreadCount > 0;
+
+                        return Material(
+                          color: Colors.transparent,
+                          child: InkWell(
+                            onTap: () {
+                              Navigator.of(context).pushNamed('/notifikasi');
+                            },
+                            borderRadius: BorderRadius.circular(24),
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Stack(
+                                clipBehavior: Clip.none,
+                                children: [
+                                  const Icon(
+                                    Icons.notifications_outlined,
+                                    color: Colors.white,
+                                    size: 30,
+                                  ),
+                                  if (hasUnread)
+                                    Positioned(
+                                      top: 0,
+                                      right: 0,
+                                      child: Container(
+                                        width: 10,
+                                        height: 10,
+                                        decoration: BoxDecoration(
+                                          color: const Color(0xFFEF4444),
+                                          shape: BoxShape.circle,
+                                          border: Border.all(
+                                            color: const Color(0xFFFF5E14),
+                                            width: 1.5,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                ],
                               ),
                             ),
-                            if (hasUnread)
-                              Positioned(
-                                top: 6,
-                                right: 6,
-                                child: Container(
-                                  width: 10,
-                                  height: 10,
-                                  decoration: BoxDecoration(
-                                    color: const Color(0xFFEF4444),
-                                    shape: BoxShape.circle,
-                                    border: Border.all(color: const Color(0xFFFF5E14), width: 1.5),
-                                  ),
-                                ),
-                              ),
-                          ],
-                        ),
-                      );
-                    },
-                  ),
-                ],
-              ),
-
-              // Thin White Underline
-              Container(
-                height: 1,
-                color: Colors.white.withValues(alpha: 0.35),
-                margin: const EdgeInsets.only(top: 8, bottom: 12),
-              ),
-
-              // Subtitle
-              RichText(
-                text: const TextSpan(
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 13,
-                    fontFamily: 'Inter',
-                  ),
-                  children: [
-                    TextSpan(text: 'Temukan loker terbaru se-'),
-                    TextSpan(
-                      text: 'Indonesia',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    TextSpan(text: ' dengan mudah!'),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 16),
-
-              // Search Bar
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(12),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.08),
-                      blurRadius: 10,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: TextField(
-                  controller: _searchController,
-                  onSubmitted: (query) {
-                    if (query.trim().isNotEmpty) {
-                      context.read<LowonganBloc>().add(FetchLowonganListEvent(keyword: query.trim()));
-                      widget.onViewAllJobs();
-                    }
-                  },
-                  decoration: InputDecoration(
-                    hintText: 'Cari...',
-                    hintStyle: const TextStyle(
-                      color: Color(0xFF94A3B8),
-                      fontSize: 14,
-                    ),
-                    prefixIcon: const Icon(
-                      Icons.search,
-                      color: Color(0xFF94A3B8),
-                      size: 24,
-                    ),
-                    suffixIcon: IconButton(
-                      icon: const Icon(
-                        Icons.tune_rounded,
-                        color: Color(0xFF1E293B),
-                        size: 22,
-                      ),
-                      onPressed: () {
-                        widget.onViewAllJobs();
+                          ),
+                        );
                       },
                     ),
-                    border: InputBorder.none,
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                  ],
+                ),
+
+                // Thin White Underline
+                Container(
+                  height: 1,
+                  color: Colors.white.withValues(alpha: 0.35),
+                  margin: const EdgeInsets.only(top: 8, bottom: 12),
+                ),
+
+                // Subtitle
+                RichText(
+                  text: const TextSpan(
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 13,
+                      fontFamily: 'Inter',
+                    ),
+                    children: [
+                      TextSpan(text: 'Temukan loker terbaru se-'),
+                      TextSpan(
+                        text: 'Indonesia',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      TextSpan(text: ' dengan mudah!'),
+                    ],
                   ),
                 ),
-              ),
-            ],
-          ),
-        ),
+                const SizedBox(height: 16),
 
-        // Background decorative circles (Watermark effect matching design)
-        Positioned(
-          top: -30,
-          right: -20,
-          child: Container(
-            width: 140,
-            height: 140,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: Colors.white.withValues(alpha: 0.08),
+                // Search Bar
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.08),
+                        blurRadius: 10,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: TextField(
+                    controller: _searchController,
+                    onSubmitted: (query) {
+                      if (query.trim().isNotEmpty) {
+                        context.read<LowonganBloc>().add(FetchLowonganListEvent(keyword: query.trim()));
+                        widget.onViewAllJobs();
+                      }
+                    },
+                    decoration: InputDecoration(
+                      hintText: 'Cari...',
+                      hintStyle: const TextStyle(
+                        color: Color(0xFF94A3B8),
+                        fontSize: 14,
+                      ),
+                      prefixIcon: const Icon(
+                        Icons.search,
+                        color: Color(0xFF94A3B8),
+                        size: 24,
+                      ),
+                      suffixIcon: IconButton(
+                        icon: const Icon(
+                          Icons.tune_rounded,
+                          color: Color(0xFF1E293B),
+                          size: 22,
+                        ),
+                        onPressed: () {
+                          widget.onViewAllJobs();
+                        },
+                      ),
+                      border: InputBorder.none,
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
-        ),
-        Positioned(
-          top: 30,
-          left: -40,
-          child: Container(
-            width: 160,
-            height: 160,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: Colors.white.withValues(alpha: 0.07),
-            ),
-          ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 

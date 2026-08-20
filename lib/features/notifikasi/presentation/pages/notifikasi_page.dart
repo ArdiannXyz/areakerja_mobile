@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/constants/app_colors.dart';
-import '../../../../core/constants/app_dimensions.dart';
-import '../../../../core/constants/app_text_styles.dart';
 import '../../../../core/utils/date_formatter.dart';
 import '../../../../shared/widgets/empty_state_widget.dart';
 import '../../data/models/notifikasi_model.dart';
@@ -15,20 +13,11 @@ class NotifikasiPage extends StatefulWidget {
   State<NotifikasiPage> createState() => _NotifikasiPageState();
 }
 
-class _NotifikasiPageState extends State<NotifikasiPage> with SingleTickerProviderStateMixin {
-  late TabController _tabController;
-
+class _NotifikasiPageState extends State<NotifikasiPage> {
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
     context.read<NotifikasiBloc>().add(const FetchNotifikasiEvent());
-  }
-
-  @override
-  void dispose() {
-    _tabController.dispose();
-    super.dispose();
   }
 
   void _onNotificationTap(NotifikasiModel notif) {
@@ -55,35 +44,51 @@ class _NotifikasiPageState extends State<NotifikasiPage> with SingleTickerProvid
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              children: [
-                _buildNotificationIcon(notif.tipe),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(notif.judul, style: AppTextStyles.heading3.copyWith(fontSize: 16)),
-                      Text(DateFormatter.timeAgo(notif.createdAt), style: AppTextStyles.caption),
-                    ],
-                  ),
+            Center(
+              child: Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade300,
+                  borderRadius: BorderRadius.circular(2),
                 ),
-              ],
+              ),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              notif.judul,
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF0F172A),
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              DateFormatter.formatDate(notif.createdAt),
+              style: const TextStyle(fontSize: 12, color: Color(0xFF64748B)),
             ),
             const SizedBox(height: 16),
             const Divider(),
             const SizedBox(height: 16),
             Text(
               notif.pesan,
-              style: AppTextStyles.bodyMedium.copyWith(height: 1.6),
+              style: const TextStyle(fontSize: 14, height: 1.6, color: Color(0xFF334155)),
             ),
             const SizedBox(height: 24),
             SizedBox(
               width: double.infinity,
               height: 48,
               child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFFFF5E14),
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
                 onPressed: () => Navigator.pop(ctx),
-                child: const Text('Tutup'),
+                child: const Text('Tutup', style: TextStyle(fontWeight: FontWeight.bold)),
               ),
             ),
           ],
@@ -92,231 +97,410 @@ class _NotifikasiPageState extends State<NotifikasiPage> with SingleTickerProvid
     );
   }
 
-  Widget _buildNotificationIcon(TipeNotifikasi tipe) {
-    IconData icon;
-    Color color;
-    Color bg;
-
-    switch (tipe) {
-      case TipeNotifikasi.interview:
-        icon = Icons.calendar_month_rounded;
-        color = const Color(0xFFD97706);
-        bg = const Color(0xFFFEF3C7);
-        break;
-      case TipeNotifikasi.lamaran:
-        icon = Icons.send_rounded;
-        color = AppColors.accent;
-        bg = AppColors.infoLight;
-        break;
-      case TipeNotifikasi.koinPembayaran:
-        icon = Icons.monetization_on_rounded;
-        color = AppColors.primary;
-        bg = AppColors.primarySurface;
-        break;
-      case TipeNotifikasi.lowonganBaru:
-        icon = Icons.work_outline_rounded;
-        color = AppColors.teal;
-        bg = AppColors.tealLight;
-        break;
-      case TipeNotifikasi.tawaran:
-        icon = Icons.stars_rounded;
-        color = AppColors.roleKandidat;
-        bg = const Color(0xFFF3E8FF);
-        break;
-      case TipeNotifikasi.sistem:
-        icon = Icons.info_outline_rounded;
-        color = AppColors.textSecondary;
-        bg = AppColors.divider;
-        break;
-    }
-
-    return Container(
-      width: 44,
-      height: 44,
-      decoration: BoxDecoration(
-        color: bg,
-        borderRadius: BorderRadius.circular(12),
+  void _showClearConfirmDialog() {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: const Text('Hapus Notifikasi'),
+        content: const Text('Tandai dan bersihkan semua notifikasi?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Batal'),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.danger,
+              foregroundColor: Colors.white,
+            ),
+            onPressed: () {
+              Navigator.pop(ctx);
+              context.read<NotifikasiBloc>().add(const MarkAllNotifikasiReadEvent());
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Semua notifikasi telah dibersihkan')),
+              );
+            },
+            child: const Text('Hapus'),
+          ),
+        ],
       ),
-      child: Icon(icon, color: color, size: 22),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded, color: AppColors.textPrimary, size: 20),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-        title: Text('Notifikasi', style: AppTextStyles.heading3),
-        actions: [
-          IconButton(
-            tooltip: 'Tandai semua dibaca',
-            icon: const Icon(Icons.done_all_rounded, color: AppColors.primary),
-            onPressed: () {
-              context.read<NotifikasiBloc>().add(const MarkAllNotifikasiReadEvent());
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Semua notifikasi ditandai sudah dibaca')),
-              );
-            },
-          ),
-        ],
-        bottom: TabBar(
-          controller: _tabController,
-          labelColor: AppColors.primary,
-          unselectedLabelColor: AppColors.textSecondary,
-          indicatorColor: AppColors.primary,
-          indicatorWeight: 3,
-          tabs: const [
-            Tab(text: 'Semua'),
-            Tab(text: 'Belum Dibaca'),
-          ],
-        ),
-      ),
-      body: BlocBuilder<NotifikasiBloc, NotifikasiState>(
-        builder: (context, state) {
-          if (state is NotifikasiLoading) {
-            return const Center(
-              child: CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
+    return BlocBuilder<NotifikasiBloc, NotifikasiState>(
+      builder: (context, state) {
+        int unreadCount = 0;
+        List<NotifikasiModel> list = [];
+
+        if (state is NotifikasiLoaded) {
+          list = state.notifications;
+          unreadCount = state.unreadCount;
+        }
+
+        final countDisplay = unreadCount > 0 ? unreadCount : list.length;
+
+        return Scaffold(
+          backgroundColor: Colors.white,
+          appBar: AppBar(
+            backgroundColor: Colors.white,
+            elevation: 0,
+            leading: IconButton(
+              icon: const Icon(
+                Icons.chevron_left_rounded,
+                color: Color(0xFF0F172A),
+                size: 30,
               ),
-            );
-          }
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+            centerTitle: true,
+            title: Text(
+              'NOTIFIKASI($countDisplay)',
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF0F172A),
+                letterSpacing: 0.5,
+              ),
+            ),
+            actions: [
+              IconButton(
+                icon: const Icon(
+                  Icons.delete_outline_rounded,
+                  color: Color(0xFF0F172A),
+                  size: 24,
+                ),
+                tooltip: 'Bersihkan Notifikasi',
+                onPressed: _showClearConfirmDialog,
+              ),
+            ],
+          ),
+          body: Column(
+            children: [
+              // Notifications list
+              Expanded(
+                child: _buildBody(state, list),
+              ),
 
-          if (state is NotifikasiLoaded) {
-            final allNotifs = state.notifications;
-            final unreadNotifs = state.notifications.where((n) => !n.isRead).toList();
+              // Bottom Button "Tandai Baca"
+              _buildBottomButton(context),
+            ],
+          ),
+        );
+      },
+    );
+  }
 
-            return TabBarView(
-              controller: _tabController,
-              children: [
-                _buildList(allNotifs, 'Belum ada notifikasi saat ini.'),
-                _buildList(unreadNotifs, 'Tidak ada notifikasi yang belum dibaca.'),
-              ],
-            );
-          }
+  Widget _buildBody(NotifikasiState state, List<NotifikasiModel> list) {
+    if (state is NotifikasiLoading) {
+      return const Center(
+        child: CircularProgressIndicator(
+          valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFFF5E14)),
+        ),
+      );
+    }
 
-          if (state is NotifikasiErrorState) {
-            return EmptyStateWidget(
-              icon: Icons.error_outline_rounded,
-              title: 'Gagal Memuat Notifikasi',
-              message: state.message,
-              actionButtonText: 'Muat Ulang',
-              onActionPressed: () {
-                context.read<NotifikasiBloc>().add(const FetchNotifikasiEvent());
-              },
-            );
-          }
+    if (state is NotifikasiErrorState) {
+      return EmptyStateWidget(
+        icon: Icons.error_outline_rounded,
+        title: 'Gagal Memuat Notifikasi',
+        message: state.message,
+        actionButtonText: 'Muat Ulang',
+        onActionPressed: () {
+          context.read<NotifikasiBloc>().add(const FetchNotifikasiEvent());
+        },
+      );
+    }
 
-          return const SizedBox.shrink();
+    if (list.isEmpty) {
+      return const EmptyStateWidget(
+        icon: Icons.notifications_off_outlined,
+        title: 'Kotak Masuk Bersih',
+        message: 'Belum ada notifikasi saat ini.',
+      );
+    }
+
+    return RefreshIndicator(
+      color: const Color(0xFFFF5E14),
+      onRefresh: () async {
+        context.read<NotifikasiBloc>().add(const FetchNotifikasiEvent());
+      },
+      child: ListView.separated(
+        padding: const EdgeInsets.only(top: 8, bottom: 16),
+        itemCount: list.length,
+        separatorBuilder: (_, _) => const Divider(
+          height: 1,
+          thickness: 1,
+          color: Color(0xFFE2E8F0),
+        ),
+        itemBuilder: (context, index) {
+          final notif = list[index];
+          return _NotificationTile(
+            notif: notif,
+            onTap: () => _onNotificationTap(notif),
+          );
         },
       ),
     );
   }
 
-  Widget _buildList(List<NotifikasiModel> list, String emptyMsg) {
-    if (list.isEmpty) {
-      return EmptyStateWidget(
-        icon: Icons.notifications_off_outlined,
-        title: 'Kotak Masuk Bersih',
-        message: emptyMsg,
-      );
-    }
-
-    return RefreshIndicator(
-      color: AppColors.primary,
-      onRefresh: () async {
-        context.read<NotifikasiBloc>().add(const FetchNotifikasiEvent());
-      },
-      child: ListView.separated(
-        padding: const EdgeInsets.all(16),
-        itemCount: list.length,
-        separatorBuilder: (_, _) => const SizedBox(height: 10),
-        itemBuilder: (context, index) {
-          final notif = list[index];
-
-          return Container(
-            decoration: BoxDecoration(
-              color: notif.isRead ? Colors.white : const Color(0xFFFFF9F5),
-              borderRadius: AppDimensions.borderRadiusL,
-              border: Border.all(
-                color: notif.isRead ? AppColors.border : AppColors.primary.withValues(alpha: 0.3),
-                width: notif.isRead ? 1 : 1.2,
+  Widget _buildBottomButton(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 10,
+            offset: const Offset(0, -3),
+          ),
+        ],
+      ),
+      child: SafeArea(
+        top: false,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
+          child: SizedBox(
+            width: double.infinity,
+            height: 50,
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFFFF5E14),
+                foregroundColor: Colors.white,
+                elevation: 0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
               ),
-              boxShadow: AppDimensions.cardShadow,
-            ),
-            child: Material(
-              color: Colors.transparent,
-              borderRadius: AppDimensions.borderRadiusL,
-              child: InkWell(
-                onTap: () => _onNotificationTap(notif),
-                borderRadius: AppDimensions.borderRadiusL,
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _buildNotificationIcon(notif.tipe),
-                      const SizedBox(width: 14),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: Text(
-                                    notif.judul,
-                                    style: AppTextStyles.labelLarge.copyWith(
-                                      fontWeight: notif.isRead ? FontWeight.w600 : FontWeight.w700,
-                                      color: AppColors.textPrimary,
-                                    ),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ),
-                                if (!notif.isRead) ...[
-                                  const SizedBox(width: 6),
-                                  Container(
-                                    width: 8,
-                                    height: 8,
-                                    decoration: const BoxDecoration(
-                                      color: AppColors.primary,
-                                      shape: BoxShape.circle,
-                                    ),
-                                  ),
-                                ],
-                              ],
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              notif.pesan,
-                              style: AppTextStyles.bodySmall.copyWith(
-                                color: notif.isRead ? AppColors.textSecondary : AppColors.textPrimary,
-                              ),
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              DateFormatter.timeAgo(notif.createdAt),
-                              style: AppTextStyles.caption,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
+              onPressed: () {
+                context.read<NotifikasiBloc>().add(const MarkAllNotifikasiReadEvent());
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Semua notifikasi ditandai sudah dibaca'),
+                    backgroundColor: Color(0xFFFF5E14),
                   ),
+                );
+              },
+              child: const Text(
+                'Tandai Baca',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
             ),
-          );
-        },
+          ),
+        ),
       ),
     );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// NOTIFICATION ITEM TILE (Matching Screenshot)
+// ---------------------------------------------------------------------------
+class _NotificationTile extends StatelessWidget {
+  final NotifikasiModel notif;
+  final VoidCallback onTap;
+
+  const _NotificationTile({
+    required this.notif,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            // Left: Company Logo Box
+            _buildCompanyLogo(),
+
+            const SizedBox(width: 14),
+
+            // Middle: Rich Message & Date
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildRichMessage(notif.pesan),
+                  const SizedBox(height: 8),
+                  Text(
+                    _formatNotificationDate(notif.createdAt),
+                    style: const TextStyle(
+                      fontSize: 11.5,
+                      color: Color(0xFF64748B),
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            // Right: Orange Unread Indicator Dot
+            if (!notif.isRead) ...[
+              const SizedBox(width: 10),
+              Container(
+                width: 9,
+                height: 9,
+                decoration: const BoxDecoration(
+                  color: Color(0xFFFF5E14),
+                  shape: BoxShape.circle,
+                ),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCompanyLogo() {
+    return Container(
+      width: 48,
+      height: 48,
+      padding: const EdgeInsets.all(4),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: const Color(0xFFF1F5F9), width: 1.2),
+      ),
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            // Stylized red/black chevron icon matching Seven Inc logo
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  width: 6,
+                  height: 12,
+                  decoration: const BoxDecoration(
+                    color: Color(0xFFEF4444),
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(2),
+                      bottomLeft: Radius.circular(2),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 2),
+                const Icon(
+                  Icons.arrow_forward_ios_rounded,
+                  size: 14,
+                  color: Color(0xFF1E293B),
+                ),
+              ],
+            ),
+            const SizedBox(height: 2),
+            const Text(
+              'SEVEN INC.',
+              style: TextStyle(
+                fontSize: 6,
+                fontWeight: FontWeight.w900,
+                color: Color(0xFF0F172A),
+                letterSpacing: 0.2,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildRichMessage(String message) {
+    // Rich highlight parser for keywords: "Diterima", "Ditolak", "Seven Inc", "Apple Corp", "Live Seminar"
+    final spans = <TextSpan>[];
+
+    // Helper regex pattern
+    final regex = RegExp(
+      r'(Seven Inc divisi UI/UX Designer|Apple Corp divisi UI/UX Designer|Live Seminar|Apple Corp|Seven Inc|Diterima|Ditolak)',
+      caseSensitive: false,
+    );
+
+    int lastIndex = 0;
+    for (final match in regex.allMatches(message)) {
+      if (match.start > lastIndex) {
+        spans.add(TextSpan(
+          text: message.substring(lastIndex, match.start),
+          style: const TextStyle(color: Color(0xFF1E293B), fontWeight: FontWeight.normal),
+        ));
+      }
+
+      final matchedText = match.group(0)!;
+      final lower = matchedText.toLowerCase();
+
+      Color matchColor = const Color(0xFF0F172A);
+      FontWeight matchWeight = FontWeight.bold;
+
+      if (lower == 'diterima') {
+        matchColor = const Color(0xFF10B981); // Green
+      } else if (lower == 'ditolak') {
+        matchColor = const Color(0xFFEF4444); // Red
+      }
+
+      spans.add(TextSpan(
+        text: matchedText,
+        style: TextStyle(
+          color: matchColor,
+          fontWeight: matchWeight,
+        ),
+      ));
+
+      lastIndex = match.end;
+    }
+
+    if (lastIndex < message.length) {
+      spans.add(TextSpan(
+        text: message.substring(lastIndex),
+        style: const TextStyle(color: Color(0xFF1E293B), fontWeight: FontWeight.normal),
+      ));
+    }
+
+    if (spans.isEmpty) {
+      spans.add(TextSpan(
+        text: message,
+        style: const TextStyle(color: Color(0xFF1E293B)),
+      ));
+    }
+
+    return RichText(
+      text: TextSpan(
+        style: const TextStyle(
+          fontSize: 13.5,
+          color: Color(0xFF1E293B),
+          fontFamily: 'Inter',
+          height: 1.38,
+        ),
+        children: spans,
+      ),
+    );
+  }
+
+  String _formatNotificationDate(DateTime date) {
+    const months = [
+      'Januari',
+      'Februari',
+      'Maret',
+      'April',
+      'Mei',
+      'Juni',
+      'Juli',
+      'Agustus',
+      'September',
+      'Oktober',
+      'November',
+      'Desember'
+    ];
+    final day = date.day;
+    final month = months[date.month - 1];
+    final year = date.year;
+    return '$day $month $year';
   }
 }
