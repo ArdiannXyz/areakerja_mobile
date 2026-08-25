@@ -26,6 +26,10 @@ class MarkAllNotifikasiReadEvent extends NotifikasiEvent {
   const MarkAllNotifikasiReadEvent();
 }
 
+class DeleteAllNotifikasiEvent extends NotifikasiEvent {
+  const DeleteAllNotifikasiEvent();
+}
+
 // STATES
 abstract class NotifikasiState extends Equatable {
   const NotifikasiState();
@@ -68,6 +72,7 @@ class NotifikasiBloc extends Bloc<NotifikasiEvent, NotifikasiState> {
     on<FetchNotifikasiEvent>(_onFetchNotifikasi);
     on<MarkNotifikasiReadEvent>(_onMarkNotifikasiRead);
     on<MarkAllNotifikasiReadEvent>(_onMarkAllNotifikasiRead);
+    on<DeleteAllNotifikasiEvent>(_onDeleteAllNotifikasi);
   }
 
   Future<void> _onFetchNotifikasi(
@@ -100,5 +105,13 @@ class NotifikasiBloc extends Bloc<NotifikasiEvent, NotifikasiState> {
   ) async {
     await _repository.markAllAsRead();
     add(const FetchNotifikasiEvent());
+  }
+
+  Future<void> _onDeleteAllNotifikasi(
+    DeleteAllNotifikasiEvent event,
+    Emitter<NotifikasiState> emit,
+  ) async {
+    await _repository.deleteAllNotifications();
+    emit(const NotifikasiLoaded(notifications: [], unreadCount: 0));
   }
 }

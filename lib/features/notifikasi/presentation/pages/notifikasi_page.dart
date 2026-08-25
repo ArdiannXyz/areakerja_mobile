@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../../core/constants/app_colors.dart';
 import '../../../../core/utils/date_formatter.dart';
 import '../../../../shared/widgets/empty_state_widget.dart';
 import '../../data/models/notifikasi_model.dart';
@@ -100,30 +99,101 @@ class _NotifikasiPageState extends State<NotifikasiPage> {
   void _showClearConfirmDialog() {
     showDialog(
       context: context,
-      builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text('Hapus Notifikasi'),
-        content: const Text('Tandai dan bersihkan semua notifikasi?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: const Text('Batal'),
+      builder: (ctx) => Dialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        backgroundColor: Colors.white,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 28, 20, 24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Large Trash Icon
+              const Icon(
+                Icons.delete_outline_rounded,
+                size: 64,
+                color: Color(0xFF334155),
+              ),
+              const SizedBox(height: 18),
+
+              // Title Question
+              const Text(
+                'Hapus semua notifikasi?',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: Color(0xFF0F172A),
+                ),
+              ),
+              const SizedBox(height: 24),
+
+              // Action Buttons Row (Green "Ya", Red "Tidak")
+              Row(
+                children: [
+                  // Button "Ya" (Green)
+                  Expanded(
+                    child: SizedBox(
+                      height: 46,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF10B981),
+                          foregroundColor: Colors.white,
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                        onPressed: () {
+                          Navigator.pop(ctx);
+                          context.read<NotifikasiBloc>().add(const DeleteAllNotifikasiEvent());
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Semua notifikasi berhasil dihapus'),
+                              backgroundColor: Color(0xFF10B981),
+                            ),
+                          );
+                        },
+                        child: const Text(
+                          'Ya',
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 14),
+
+                  // Button "Tidak" (Red)
+                  Expanded(
+                    child: SizedBox(
+                      height: 46,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFFFF0000),
+                          foregroundColor: Colors.white,
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                        onPressed: () => Navigator.pop(ctx),
+                        child: const Text(
+                          'Tidak',
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.danger,
-              foregroundColor: Colors.white,
-            ),
-            onPressed: () {
-              Navigator.pop(ctx);
-              context.read<NotifikasiBloc>().add(const MarkAllNotifikasiReadEvent());
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Semua notifikasi telah dibersihkan')),
-              );
-            },
-            child: const Text('Hapus'),
-          ),
-        ],
+        ),
       ),
     );
   }
@@ -132,15 +202,11 @@ class _NotifikasiPageState extends State<NotifikasiPage> {
   Widget build(BuildContext context) {
     return BlocBuilder<NotifikasiBloc, NotifikasiState>(
       builder: (context, state) {
-        int unreadCount = 0;
         List<NotifikasiModel> list = [];
 
         if (state is NotifikasiLoaded) {
           list = state.notifications;
-          unreadCount = state.unreadCount;
         }
-
-        final countDisplay = unreadCount > 0 ? unreadCount : list.length;
 
         return Scaffold(
           backgroundColor: Colors.white,
@@ -156,13 +222,13 @@ class _NotifikasiPageState extends State<NotifikasiPage> {
               onPressed: () => Navigator.of(context).pop(),
             ),
             centerTitle: true,
-            title: Text(
-              'NOTIFIKASI($countDisplay)',
-              style: const TextStyle(
+            title: const Text(
+              'Notifikasi',
+              style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
                 color: Color(0xFF0F172A),
-                letterSpacing: 0.5,
+                letterSpacing: 0.2,
               ),
             ),
             actions: [
@@ -170,9 +236,9 @@ class _NotifikasiPageState extends State<NotifikasiPage> {
                 icon: const Icon(
                   Icons.delete_outline_rounded,
                   color: Color(0xFF0F172A),
-                  size: 24,
+                  size: 26,
                 ),
-                tooltip: 'Bersihkan Notifikasi',
+                tooltip: 'Hapus semua notifikasi',
                 onPressed: _showClearConfirmDialog,
               ),
             ],
@@ -228,13 +294,9 @@ class _NotifikasiPageState extends State<NotifikasiPage> {
         context.read<NotifikasiBloc>().add(const FetchNotifikasiEvent());
       },
       child: ListView.separated(
-        padding: const EdgeInsets.only(top: 8, bottom: 16),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         itemCount: list.length,
-        separatorBuilder: (_, _) => const Divider(
-          height: 1,
-          thickness: 1,
-          color: Color(0xFFE2E8F0),
-        ),
+        separatorBuilder: (_, _) => const SizedBox(height: 12),
         itemBuilder: (context, index) {
           final notif = list[index];
           return _NotificationTile(
@@ -261,13 +323,13 @@ class _NotifikasiPageState extends State<NotifikasiPage> {
       child: SafeArea(
         top: false,
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
+          padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
           child: SizedBox(
             width: double.infinity,
             height: 50,
             child: ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFFF5E14),
+                backgroundColor: const Color(0xFFB84B12),
                 foregroundColor: Colors.white,
                 elevation: 0,
                 shape: RoundedRectangleBorder(
@@ -279,7 +341,7 @@ class _NotifikasiPageState extends State<NotifikasiPage> {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
                     content: Text('Semua notifikasi ditandai sudah dibaca'),
-                    backgroundColor: Color(0xFFFF5E14),
+                    backgroundColor: Color(0xFFB84B12),
                   ),
                 );
               },
@@ -312,50 +374,69 @@ class _NotificationTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            // Left: Company Logo Box
-            _buildCompanyLogo(),
+    return Container(
+      decoration: BoxDecoration(
+        color: const Color(0xFFFAFAFA),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: const Color(0xFFE2E8F0)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.02),
+            blurRadius: 6,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(14),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(14),
+          onTap: onTap,
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Left: Company Logo Box
+                _buildCompanyLogo(),
 
-            const SizedBox(width: 14),
+                const SizedBox(width: 14),
 
-            // Middle: Rich Message & Date
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildRichMessage(notif.pesan),
-                  const SizedBox(height: 8),
-                  Text(
-                    _formatNotificationDate(notif.createdAt),
-                    style: const TextStyle(
-                      fontSize: 11.5,
-                      color: Color(0xFF64748B),
-                      fontWeight: FontWeight.w500,
+                // Middle: Rich Message & Date
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildRichMessage(notif.pesan),
+                      const SizedBox(height: 12),
+                      Text(
+                        _formatNotificationDate(notif.createdAt),
+                        style: const TextStyle(
+                          fontSize: 11.5,
+                          color: Color(0xFF64748B),
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                // Right: Orange Unread Indicator Dot
+                if (!notif.isRead) ...[
+                  const SizedBox(width: 8),
+                  Container(
+                    width: 8,
+                    height: 8,
+                    decoration: const BoxDecoration(
+                      color: Color(0xFFFF5E14),
+                      shape: BoxShape.circle,
                     ),
                   ),
                 ],
-              ),
+              ],
             ),
-
-            // Right: Orange Unread Indicator Dot
-            if (!notif.isRead) ...[
-              const SizedBox(width: 10),
-              Container(
-                width: 9,
-                height: 9,
-                decoration: const BoxDecoration(
-                  color: Color(0xFFFF5E14),
-                  shape: BoxShape.circle,
-                ),
-              ),
-            ],
-          ],
+          ),
         ),
       ),
     );

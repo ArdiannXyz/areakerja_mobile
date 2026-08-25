@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/constants/app_text_styles.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
@@ -20,12 +21,31 @@ class DashboardPelamarPage extends StatefulWidget {
 
 class _DashboardPelamarPageState extends State<DashboardPelamarPage> {
   int _currentIndex = 0;
+  late final PageController _pageController;
 
   @override
   void initState() {
     super.initState();
+    _pageController = PageController(initialPage: _currentIndex);
     context.read<LowonganBloc>().add(const FetchLowonganListEvent());
     context.read<NotifikasiBloc>().add(const FetchNotifikasiEvent());
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  void _onTabTapped(int index) {
+    if (_currentIndex == index) return;
+    HapticFeedback.lightImpact();
+    setState(() => _currentIndex = index);
+    _pageController.animateToPage(
+      index,
+      duration: const Duration(milliseconds: 280),
+      curve: Curves.easeInOutCubic,
+    );
   }
 
   @override
@@ -38,17 +58,18 @@ class _DashboardPelamarPageState extends State<DashboardPelamarPage> {
       },
       child: Scaffold(
         backgroundColor: const Color(0xFFF8FAFC),
-        body: IndexedStack(
-          index: _currentIndex,
+        body: PageView(
+          controller: _pageController,
+          physics: const NeverScrollableScrollPhysics(),
           children: [
             _BerandaHomeView(
-              onViewAllJobs: () {
-                setState(() => _currentIndex = 1);
-              },
+              onViewAllJobs: () => _onTabTapped(1),
             ),
             const DaftarLowonganPage(),
             const DashboardKandidatPage(),
-            const ProfilPelamarPage(),
+            ProfilPelamarPage(
+              onNavigateToKandidatTab: () => _onTabTapped(2),
+            ),
           ],
         ),
         bottomNavigationBar: _buildCustomBottomBar(),
@@ -57,50 +78,88 @@ class _DashboardPelamarPageState extends State<DashboardPelamarPage> {
   }
 
   Widget _buildCustomBottomBar() {
+    const int itemCount = 4;
+    const activeColor = Color(0xFFFF5E14);
+
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
         border: Border(
-          top: BorderSide(color: Colors.black.withValues(alpha: 0.06), width: 1),
+          top: BorderSide(color: Colors.black.withValues(alpha: 0.05), width: 1),
         ),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.04),
-            blurRadius: 10,
-            offset: const Offset(0, -2),
+            blurRadius: 14,
+            offset: const Offset(0, -3),
           ),
         ],
       ),
       child: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
+        top: false,
+        child: SizedBox(
+          height: 66,
+          child: Stack(
             children: [
-              _buildNavItem(
-                index: 0,
-                label: 'Beranda',
-                activeIcon: Icons.home_filled,
-                inactiveIcon: Icons.home_outlined,
-                isHome: true,
+              // 1. Sliding Active Capsule Highlight Background (Exact Grid Alignment)
+              AnimatedAlign(
+                duration: const Duration(milliseconds: 320),
+                curve: Curves.fastOutSlowIn,
+                alignment: Alignment(-1.0 + (_currentIndex * (2.0 / (itemCount - 1))), 0.0),
+                child: FractionallySizedBox(
+                  widthFactor: 1.0 / itemCount,
+                  heightFactor: 1.0,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            activeColor.withValues(alpha: 0.15),
+                            activeColor.withValues(alpha: 0.07),
+                          ],
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                        ),
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(
+                          color: activeColor.withValues(alpha: 0.18),
+                          width: 1,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
               ),
-              _buildNavItem(
-                index: 1,
-                label: 'Lowongan Ke..',
-                activeIcon: Icons.business_center_rounded,
-                inactiveIcon: Icons.business_center_outlined,
-              ),
-              _buildNavItem(
-                index: 2,
-                label: 'Daftar Kandi..',
-                activeIcon: Icons.diversity_3_rounded,
-                inactiveIcon: Icons.diversity_3_outlined,
-              ),
-              _buildNavItem(
-                index: 3,
-                label: 'Profil',
-                activeIcon: Icons.person_rounded,
-                inactiveIcon: Icons.person_outline_rounded,
+
+              // 2. Navigation Items Row (Exact 1:1 Matching Grid)
+              Row(
+                children: [
+                  _buildNavItem(
+                    index: 0,
+                    label: 'Beranda',
+                    activeIcon: Icons.home_rounded,
+                    inactiveIcon: Icons.home_outlined,
+                  ),
+                  _buildNavItem(
+                    index: 1,
+                    label: 'Lowongan',
+                    activeIcon: Icons.business_center_rounded,
+                    inactiveIcon: Icons.business_center_outlined,
+                  ),
+                  _buildNavItem(
+                    index: 2,
+                    label: 'Kandidat',
+                    activeIcon: Icons.diversity_3_rounded,
+                    inactiveIcon: Icons.diversity_3_outlined,
+                  ),
+                  _buildNavItem(
+                    index: 3,
+                    label: 'Profil',
+                    activeIcon: Icons.person_rounded,
+                    inactiveIcon: Icons.person_outline_rounded,
+                  ),
+                ],
               ),
             ],
           ),
@@ -114,45 +173,71 @@ class _DashboardPelamarPageState extends State<DashboardPelamarPage> {
     required String label,
     required IconData activeIcon,
     required IconData inactiveIcon,
-    bool isHome = false,
   }) {
     final isSelected = _currentIndex == index;
     const activeColor = Color(0xFFFF5E14);
     const inactiveColor = Color(0xFF64748B);
 
-    return InkWell(
-      onTap: () => setState(() => _currentIndex = index),
-      borderRadius: BorderRadius.circular(12),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (isHome && isSelected)
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
-                decoration: BoxDecoration(
-                  color: activeColor,
-                  borderRadius: BorderRadius.circular(12),
+    return Expanded(
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () => _onTabTapped(index),
+          splashColor: activeColor.withValues(alpha: 0.12),
+          highlightColor: Colors.transparent,
+          borderRadius: BorderRadius.circular(16),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 6),
+            child: Column(
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                AnimatedScale(
+                  scale: isSelected ? 1.10 : 1.0,
+                  duration: const Duration(milliseconds: 280),
+                  curve: Curves.easeOutBack,
+                  child: AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 220),
+                    switchInCurve: Curves.easeOut,
+                    switchOutCurve: Curves.easeIn,
+                    transitionBuilder: (child, anim) => ScaleTransition(
+                      scale: anim,
+                      child: FadeTransition(
+                        opacity: anim,
+                        child: child,
+                      ),
+                    ),
+                    child: Icon(
+                      isSelected ? activeIcon : inactiveIcon,
+                      key: ValueKey(isSelected),
+                      color: isSelected ? activeColor : inactiveColor,
+                      size: 24,
+                    ),
+                  ),
                 ),
-                child: const Icon(Icons.home_filled, color: Colors.white, size: 20),
-              )
-            else
-              Icon(
-                isSelected ? activeIcon : inactiveIcon,
-                color: isSelected ? activeColor : inactiveColor,
-                size: 24,
-              ),
-            const SizedBox(height: 4),
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 11.5,
-                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-                color: isSelected ? activeColor : inactiveColor,
-              ),
+                const SizedBox(height: 3),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 4),
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: AnimatedDefaultTextStyle(
+                      duration: const Duration(milliseconds: 240),
+                      curve: Curves.easeInOut,
+                      style: TextStyle(
+                        fontFamily: 'Inter',
+                        fontSize: 11.5,
+                        fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                        color: isSelected ? activeColor : inactiveColor,
+                        letterSpacing: isSelected ? -0.15 : -0.1,
+                      ),
+                      maxLines: 1,
+                      child: Text(label),
+                    ),
+                  ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );
@@ -479,6 +564,11 @@ class _BerandaHomeViewState extends State<_BerandaHomeView> {
                         },
                       ),
                       border: InputBorder.none,
+                      enabledBorder: InputBorder.none,
+                      focusedBorder: InputBorder.none,
+                      errorBorder: InputBorder.none,
+                      disabledBorder: InputBorder.none,
+                      filled: false,
                       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                     ),
                   ),
@@ -512,20 +602,33 @@ class _BerandaHomeViewState extends State<_BerandaHomeView> {
                   );
             },
             borderRadius: BorderRadius.circular(20),
-            child: Container(
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 220),
+              curve: Curves.easeInOut,
               padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
               decoration: BoxDecoration(
                 color: isSelected ? const Color(0xFFFF5E14) : const Color(0xFFE2E8F0),
                 borderRadius: BorderRadius.circular(20),
+                boxShadow: isSelected
+                    ? [
+                        BoxShadow(
+                          color: const Color(0xFFFF5E14).withValues(alpha: 0.3),
+                          blurRadius: 8,
+                          offset: const Offset(0, 3),
+                        ),
+                      ]
+                    : null,
               ),
               child: Center(
-                child: Text(
-                  cat,
+                child: AnimatedDefaultTextStyle(
+                  duration: const Duration(milliseconds: 200),
                   style: TextStyle(
+                    fontFamily: 'Inter',
                     fontSize: 13,
                     fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
                     color: isSelected ? Colors.white : const Color(0xFF475569),
                   ),
+                  child: Text(cat),
                 ),
               ),
             ),

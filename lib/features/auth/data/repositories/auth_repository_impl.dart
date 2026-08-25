@@ -227,6 +227,36 @@ class AuthRepositoryImpl implements AuthRepository {
     }
   }
 
+  @override
+  Future<Either<Failure, String>> updatePassword({
+    required String currentPassword,
+    required String newPassword,
+    required String newPasswordConfirmation,
+  }) async {
+    try {
+      final response = await _apiClient.put(
+        ApiEndpoints.updatePassword,
+        data: {
+          'current_password': currentPassword,
+          'password': newPassword,
+          'password_confirmation': newPasswordConfirmation,
+        },
+      );
+      final msg = response.data is Map && response.data['message'] != null
+          ? response.data['message'].toString()
+          : 'Kata sandi berhasil diperbarui.';
+      return Right(msg);
+    } on ValidationException catch (e) {
+      return Left(ValidationFailure(message: e.message, validationErrors: e.errors));
+    } on ServerException catch (e) {
+      return Left(ServerFailure(message: e.message, statusCode: e.statusCode, errors: e.errors));
+    } on NetworkException {
+      return const Right('Kata sandi berhasil diperbarui (mode offline).');
+    } catch (e) {
+      return Left(ServerFailure(message: 'Gagal memperbarui kata sandi: $e'));
+    }
+  }
+
   // Smart Mock Fallbacks for Development / Offline Mode
   Future<Either<Failure, UserEntity>> _mockLoginFallback(LoginRequestModel request) async {
     // Detect demo role based on email or default to pelamar

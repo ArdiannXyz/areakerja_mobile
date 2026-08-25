@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../../core/constants/app_colors.dart';
-import '../../../../core/constants/app_dimensions.dart';
-import '../../../../core/constants/app_text_styles.dart';
-import '../../../../core/utils/date_formatter.dart';
-import '../../../../shared/widgets/primary_button.dart';
 import '../../data/models/lowongan_model.dart';
 import '../bloc/lowongan_bloc.dart';
+import 'daftar_lowongan_page.dart';
+import 'form_lamaran_page.dart';
 
 class DetailLowonganPage extends StatefulWidget {
   final LowonganModel lowongan;
@@ -35,345 +32,361 @@ class _DetailLowonganPageState extends State<DetailLowonganPage> {
 
   @override
   Widget build(BuildContext context) {
+    final gajiText = _formatGajiText(_job);
+    final daysAgo = _getDaysAgoText(_job);
+
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
+        centerTitle: true,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded, color: AppColors.textPrimary, size: 20),
+          icon: const Icon(Icons.chevron_left_rounded, color: Color(0xFF0F172A), size: 30),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        title: Text(
+        title: const Text(
           'Detail Lowongan',
-          style: AppTextStyles.heading3,
+          style: TextStyle(
+            fontSize: 17.5,
+            fontWeight: FontWeight.bold,
+            color: Color(0xFF0F172A),
+          ),
         ),
         actions: [
           IconButton(
             icon: Icon(
               _job.isFavorit ? Icons.bookmark_rounded : Icons.bookmark_outline_rounded,
-              color: _job.isFavorit ? AppColors.primary : AppColors.textSecondary,
+              color: _job.isFavorit ? const Color(0xFFFF5E14) : const Color(0xFF64748B),
+              size: 24,
             ),
             onPressed: _toggleBookmark,
-          ),
-          IconButton(
-            icon: const Icon(Icons.share_outlined, color: AppColors.textSecondary),
-            onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Tautan lowongan telah disalin')),
-              );
-            },
           ),
         ],
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.fromLTRB(20, 12, 20, 32),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Company & Position Header Card
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: AppDimensions.borderRadiusXL,
-                border: Border.all(color: AppColors.border),
-                boxShadow: AppDimensions.cardShadow,
-              ),
+            // 1. CENTERED COMPANY & JOB HEADER (Matching Screenshot 2)
+            Center(
               child: Column(
                 children: [
-                  Container(
-                    width: 64,
-                    height: 64,
-                    decoration: BoxDecoration(
-                      color: AppColors.primarySurface,
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: AppColors.primary.withValues(alpha: 0.2)),
-                    ),
-                    child: Center(
-                      child: Text(
-                        _job.namaPerusahaan.isNotEmpty ? _job.namaPerusahaan[0].toUpperCase() : 'A',
-                        style: const TextStyle(
-                          color: AppColors.primary,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 28,
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: AppDimensions.spaceM),
+                  const SevenIncLogoWidget(size: 60),
+                  const SizedBox(height: 14),
                   Text(
                     _job.judul,
-                    style: AppTextStyles.heading2.copyWith(fontSize: 20),
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF0F172A),
+                    ),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 4),
                   Text(
                     _job.namaPerusahaan,
-                    style: AppTextStyles.bodyMedium.copyWith(
-                      color: AppColors.primary,
+                    style: const TextStyle(
+                      fontSize: 14.5,
                       fontWeight: FontWeight.w600,
+                      color: Color(0xFF1E293B),
                     ),
                     textAlign: TextAlign.center,
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 4),
+                  Text(
+                    _job.lokasi,
+                    style: const TextStyle(
+                      fontSize: 13,
+                      color: Color(0xFF64748B),
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 6),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Icon(Icons.location_on_outlined, size: 16, color: AppColors.textSecondary),
-                      const SizedBox(width: 4),
-                      Text(_job.lokasi, style: AppTextStyles.bodySmall),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                  const Divider(height: 1),
-                  const SizedBox(height: 16),
-
-                  // Info grid (Gaji, Tipe, Pelamar)
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      _JobInfoItem(
-                        icon: Icons.payments_outlined,
-                        title: 'Gaji Bulanan',
-                        value: _job.rentangGaji,
-                        color: AppColors.primary,
+                      const Icon(
+                        Icons.calendar_today_outlined,
+                        size: 13.5,
+                        color: Color(0xFF64748B),
                       ),
-                      Container(width: 1, height: 36, color: AppColors.border),
-                      _JobInfoItem(
-                        icon: Icons.work_outline_rounded,
-                        title: 'Tipe Kerja',
-                        value: _job.tipePekerjaan,
-                        color: AppColors.accent,
-                      ),
-                      Container(width: 1, height: 36, color: AppColors.border),
-                      _JobInfoItem(
-                        icon: Icons.people_outline_rounded,
-                        title: 'Pelamar',
-                        value: '${_job.jumlahPelamar} Orang',
-                        color: AppColors.teal,
+                      const SizedBox(width: 5),
+                      Text(
+                        daysAgo,
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: Color(0xFF64748B),
+                        ),
                       ),
                     ],
                   ),
                 ],
               ),
             ),
-            const SizedBox(height: AppDimensions.space2XL),
 
-            // Deskripsi Pekerjaan
-            _DetailSection(
-              title: 'Deskripsi Pekerjaan',
-              child: Text(
-                _job.deskripsi,
-                style: AppTextStyles.bodyMedium.copyWith(height: 1.6),
+            const SizedBox(height: 18),
+            const Divider(color: Color(0xFFE2E8F0), thickness: 1),
+            const SizedBox(height: 16),
+
+            // 2. DESKRIPSI PEKERJAAN (Matching Screenshot 2)
+            const Text(
+              'Deskripsi Pekerjaan',
+              style: TextStyle(
+                fontSize: 15.5,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF0F172A),
               ),
             ),
-            const SizedBox(height: AppDimensions.spaceXL),
+            const SizedBox(height: 10),
+            ..._buildBulletList(_getJobDescriptions(_job)),
 
-            // Kualifikasi & Persyaratan
-            if (_job.persyaratan.isNotEmpty) ...[
-              _DetailSection(
-                title: 'Persyaratan & Kualifikasi',
-                child: Column(
-                  children: _job.persyaratan.map((req) {
-                    return Padding(
-                      padding: const EdgeInsets.only(bottom: 8.0),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Padding(
-                            padding: EdgeInsets.only(top: 6),
-                            child: Icon(Icons.check_circle_rounded, color: AppColors.success, size: 16),
-                          ),
-                          const SizedBox(width: 10),
-                          Expanded(
-                            child: Text(
-                              req,
-                              style: AppTextStyles.bodyMedium.copyWith(height: 1.5),
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
-                  }).toList(),
-                ),
-              ),
-              const SizedBox(height: AppDimensions.spaceXL),
-            ],
+            const SizedBox(height: 20),
 
-            // Benefit & Fasilitas
-            if (_job.benefit.isNotEmpty) ...[
-              _DetailSection(
-                title: 'Benefit & Fasilitas',
-                child: Column(
-                  children: _job.benefit.map((ben) {
-                    return Padding(
-                      padding: const EdgeInsets.only(bottom: 8.0),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Padding(
-                            padding: EdgeInsets.only(top: 6),
-                            child: Icon(Icons.star_rounded, color: AppColors.warning, size: 18),
-                          ),
-                          const SizedBox(width: 10),
-                          Expanded(
-                            child: Text(
-                              ben,
-                              style: AppTextStyles.bodyMedium.copyWith(height: 1.5),
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
-                  }).toList(),
-                ),
-              ),
-              const SizedBox(height: AppDimensions.spaceXL),
-            ],
-
-            // Batas Lamaran
-            Container(
-              padding: const EdgeInsets.all(14),
-              decoration: BoxDecoration(
-                color: AppColors.primarySurface,
-                borderRadius: AppDimensions.borderRadiusM,
-                border: Border.all(color: AppColors.primary.withValues(alpha: 0.3)),
-              ),
-              child: Row(
-                children: [
-                  const Icon(Icons.calendar_month_outlined, color: AppColors.primary, size: 20),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Text(
-                      'Dipublikasikan: ${DateFormatter.formatDate(_job.createdAt)}',
-                      style: AppTextStyles.caption.copyWith(
-                        color: AppColors.primaryDark,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                ],
+            // 3. SYARAT PEKERJAAN (Matching Screenshot 2)
+            const Text(
+              'Syarat Pekerjaan',
+              style: TextStyle(
+                fontSize: 15.5,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF0F172A),
               ),
             ),
-            const SizedBox(height: 80), // Space for sticky bottom bar
-          ],
-        ),
-      ),
-      bottomSheet: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.08),
-              blurRadius: 10,
-              offset: const Offset(0, -4),
+            const SizedBox(height: 10),
+            ..._buildBulletList(_getJobRequirements(_job)),
+
+            const SizedBox(height: 20),
+
+            // 4. SPECIFICATION KEY-VALUE ITEMS (Matching Screenshot 2 & 3)
+            _buildSpecItem('Jenis Lowongan', _job.tipePekerjaan),
+            const SizedBox(height: 14),
+
+            _buildSpecItem('Gaji', gajiText),
+            const SizedBox(height: 14),
+
+            _buildSpecItem('Pendidikan', 'D4/S1 - Teknologi Informasi'),
+            const SizedBox(height: 14),
+
+            _buildSpecItem('Umur', '25 Tahun'),
+            const SizedBox(height: 14),
+
+            _buildSpecItem('Jenis Kelamin', 'Laki-laki/Perempuan'),
+
+            const SizedBox(height: 22),
+            const Divider(color: Color(0xFFE2E8F0), thickness: 1),
+            const SizedBox(height: 16),
+
+            // 5. LOWONGAN SEVEN INC LAINNYA (Matching Screenshot 3)
+            Text(
+              'Lowongan ${_job.namaPerusahaan} lainnya',
+              style: const TextStyle(
+                fontSize: 15.5,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF0F172A),
+              ),
             ),
-          ],
-        ),
-        child: SafeArea(
-          child: Row(
-            children: [
-              OutlinedButton(
-                onPressed: _toggleBookmark,
-                style: OutlinedButton.styleFrom(
-                  minimumSize: const Size(50, AppDimensions.buttonHeight),
-                  padding: EdgeInsets.zero,
-                  side: BorderSide(
-                    color: _job.isFavorit ? AppColors.primary : AppColors.border,
-                  ),
+            const SizedBox(height: 12),
+            _buildRelatedJobsList(),
+
+            const SizedBox(height: 28),
+
+            // 6. BOTTOM CTA: LAMAR SEKARANG
+            SizedBox(
+              width: double.infinity,
+              height: 50,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFFFF5E14),
+                  foregroundColor: Colors.white,
+                  elevation: 0,
                   shape: RoundedRectangleBorder(
-                    borderRadius: AppDimensions.borderRadiusM,
+                    borderRadius: BorderRadius.circular(14),
                   ),
                 ),
-                child: Icon(
-                  _job.isFavorit ? Icons.bookmark_rounded : Icons.bookmark_outline_rounded,
-                  color: _job.isFavorit ? AppColors.primary : AppColors.textSecondary,
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => FormLamaranPage(lowongan: _job),
+                    ),
+                  );
+                },
+                child: const Text(
+                  'Lamar Sekarang',
+                  style: TextStyle(
+                    fontSize: 15.5,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: PrimaryButton(
-                  text: 'Lamar Sekarang',
-                  icon: const Icon(Icons.send_rounded, color: Colors.white, size: 18),
-                  onPressed: () {
-                    Navigator.of(context).pushNamed(
-                      '/lowongan/lamar',
-                      arguments: {'lowongan': _job},
-                    );
-                  },
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
   }
-}
 
-class _JobInfoItem extends StatelessWidget {
-  final IconData icon;
-  final String title;
-  final String value;
-  final Color color;
+  // --- Bullet Point Item Widget ---
+  List<Widget> _buildBulletList(List<String> items) {
+    return items.map((text) {
+      return Padding(
+        padding: const EdgeInsets.only(bottom: 6),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Padding(
+              padding: EdgeInsets.only(top: 4, right: 8),
+              child: Icon(
+                Icons.arrow_right_rounded,
+                size: 16,
+                color: Color(0xFF334155),
+              ),
+            ),
+            Expanded(
+              child: Text(
+                text,
+                style: const TextStyle(
+                  fontSize: 13.5,
+                  color: Color(0xFF334155),
+                  height: 1.4,
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    }).toList();
+  }
 
-  const _JobInfoItem({
-    required this.icon,
-    required this.title,
-    required this.value,
-    required this.color,
-  });
-
-  @override
-  Widget build(BuildContext context) {
+  // --- Spec Key-Value Item ---
+  Widget _buildSpecItem(String title, String value) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(icon, color: color, size: 20),
-        const SizedBox(height: 4),
-        Text(title, style: AppTextStyles.caption.copyWith(fontSize: 11)),
-        const SizedBox(height: 2),
+        Text(
+          title,
+          style: const TextStyle(
+            fontSize: 14.5,
+            fontWeight: FontWeight.bold,
+            color: Color(0xFF0F172A),
+          ),
+        ),
+        const SizedBox(height: 3),
         Text(
           value,
-          style: AppTextStyles.labelLarge.copyWith(fontSize: 12.5),
+          style: const TextStyle(
+            fontSize: 13.5,
+            color: Color(0xFF475569),
+          ),
         ),
       ],
     );
   }
-}
 
-class _DetailSection extends StatelessWidget {
-  final String title;
-  final Widget child;
-
-  const _DetailSection({
-    required this.title,
-    required this.child,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(18),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: AppDimensions.borderRadiusL,
-        border: Border.all(color: AppColors.border),
+  // --- Related Jobs Horizontal Carousel ---
+  Widget _buildRelatedJobsList() {
+    final relatedJobs = [
+      LowonganModel(
+        id: 'rel_1',
+        judul: 'UI/UX Designer',
+        namaPerusahaan: _job.namaPerusahaan,
+        lokasi: _job.lokasi,
+        tipePekerjaan: 'Full Time',
+        kategori: _job.kategori,
+        gajiMin: _job.gajiMin ?? 8000000,
+        gajiMax: _job.gajiMax ?? 10000000,
+        deskripsi: _job.deskripsi,
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            title,
-            style: AppTextStyles.heading3.copyWith(fontSize: 16),
-          ),
-          const SizedBox(height: 12),
-          child,
-        ],
+      LowonganModel(
+        id: 'rel_2',
+        judul: 'UI/UX Designer',
+        namaPerusahaan: _job.namaPerusahaan,
+        lokasi: _job.lokasi,
+        tipePekerjaan: 'Full Time',
+        kategori: _job.kategori,
+        gajiMin: _job.gajiMin ?? 8000000,
+        gajiMax: _job.gajiMax ?? 10000000,
+        deskripsi: _job.deskripsi,
+      ),
+      LowonganModel(
+        id: 'rel_3',
+        judul: 'UI/UX Designer',
+        namaPerusahaan: _job.namaPerusahaan,
+        lokasi: _job.lokasi,
+        tipePekerjaan: 'Full Time',
+        kategori: _job.kategori,
+        gajiMin: _job.gajiMin ?? 8000000,
+        gajiMax: _job.gajiMax ?? 10000000,
+        deskripsi: _job.deskripsi,
+      ),
+    ];
+
+    return SizedBox(
+      height: 248,
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        clipBehavior: Clip.none,
+        itemCount: relatedJobs.length,
+        separatorBuilder: (_, _) => const SizedBox(width: 14),
+        itemBuilder: (context, index) {
+          final relJob = relatedJobs[index];
+          return LowonganVerticalCard(job: relJob);
+        },
       ),
     );
+  }
+
+  String _formatGajiText(LowonganModel j) {
+    if (j.gajiMin != null && j.gajiMax != null) {
+      return 'Rp. ${_formatNumber(j.gajiMin!)} - Rp. ${_formatNumber(j.gajiMax!)} per bulan';
+    }
+    return 'Rp. 8.000.000 - Rp. 10.000.000 per bulan';
+  }
+
+  String _formatNumber(num n) {
+    final s = n.toInt().toString();
+    return s.replaceAllMapped(
+      RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
+      (Match m) => '${m[1]}.',
+    );
+  }
+
+  String _getDaysAgoText(LowonganModel j) {
+    if (j.createdAt != null) {
+      final days = DateTime.now().difference(j.createdAt!).inDays;
+      if (days > 0) return 'Dipasang $days hari yang lalu';
+    }
+    return 'Dipasang 7 hari yang lalu';
+  }
+
+  List<String> _getJobDescriptions(LowonganModel j) {
+    if (j.deskripsi.isNotEmpty && j.deskripsi.contains('\n')) {
+      return j.deskripsi.split('\n').where((s) => s.trim().isNotEmpty).toList();
+    }
+    return const [
+      'Lorem ipsum dolor sit amet consectetur.',
+      'Lorem ipsum dolor sit amet consectetur. Sed et',
+      'Lorem ipsum dolor sit amet consectetur. Sed et',
+      'Lorem ipsum dolor sit amet consectetur. Sed et',
+      'Lorem ipsum dolor sit amet consectetur. Sed et',
+      'Lorem ipsum dolor sit amet consectetur. Sed et',
+      'Lorem ipsum dolor sit amet consectetur. Sed et',
+      'Lorem ipsum dolor sit amet consectetur. Sed et',
+    ];
+  }
+
+  List<String> _getJobRequirements(LowonganModel j) {
+    if (j.persyaratan.isNotEmpty) {
+      return j.persyaratan;
+    }
+    return const [
+      'Lorem ipsum dolor sit amet consectetur. Sed et',
+      'Lorem ipsum dolor sit amet consectetur. Sed et',
+      'Lorem ipsum dolor sit amet consectetur. Sed et',
+      'Lorem ipsum dolor sit amet consectetur. Sed et',
+      'Lorem ipsum dolor sit amet consectetur. Sed et',
+      'Lorem ipsum dolor sit amet consectetur. Sed et',
+      'Lorem ipsum dolor sit amet consectetur. Sed et',
+    ];
   }
 }

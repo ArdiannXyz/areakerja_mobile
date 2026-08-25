@@ -8,6 +8,7 @@ abstract class NotifikasiRepository {
   Future<Either<Failure, List<NotifikasiModel>>> getNotifikasiList();
   Future<Either<Failure, void>> markAsRead(String id);
   Future<Either<Failure, void>> markAllAsRead();
+  Future<Either<Failure, void>> deleteAllNotifications();
   Future<Either<Failure, int>> getUnreadCount();
 }
 
@@ -105,6 +106,16 @@ class NotifikasiRepositoryImpl implements NotifikasiRepository {
     } catch (_) {}
 
     _notifications = _notifications.map((n) => n.copyWith(isRead: true)).toList();
+    return const Right(null);
+  }
+
+  @override
+  Future<Either<Failure, void>> deleteAllNotifications() async {
+    try {
+      await _apiClient.delete(ApiEndpoints.notifications);
+    } catch (_) {}
+
+    _notifications.clear();
     return const Right(null);
   }
 

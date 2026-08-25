@@ -17,7 +17,9 @@ class ApiInterceptor extends Interceptor {
     RequestInterceptorHandler handler,
   ) async {
     options.headers['Accept'] = 'application/json';
-    options.headers['Content-Type'] = 'application/json';
+    if (options.data is! FormData) {
+      options.headers['Content-Type'] = 'application/json';
+    }
 
     final token = await _secureStorage.getToken();
     if (token != null && token.isNotEmpty) {

@@ -23,4 +23,10 @@ abstract class AuthRepository {
     required String otp,
     required String newPassword,
   });
+
+  Future<Either<Failure, String>> updatePassword({
+    required String currentPassword,
+    required String newPassword,
+    required String newPasswordConfirmation,
+  });
 }

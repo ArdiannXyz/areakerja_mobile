@@ -3,13 +3,18 @@ import '../../features/auth/presentation/pages/forgot_password_page.dart';
 import '../../features/auth/presentation/pages/login_page.dart';
 import '../../features/auth/presentation/pages/otp_verify_page.dart';
 import '../../features/auth/presentation/pages/register_page.dart';
+import '../../features/kandidat/presentation/pages/dashboard_kandidat_page.dart';
 import '../../features/lowongan/data/models/lowongan_model.dart';
 import '../../features/lowongan/presentation/pages/daftar_lowongan_page.dart';
 import '../../features/lowongan/presentation/pages/detail_lowongan_page.dart';
 import '../../features/lowongan/presentation/pages/form_lamaran_page.dart';
 import '../../features/notifikasi/presentation/pages/notifikasi_page.dart';
+import '../../features/pelamar/presentation/pages/alamat_page.dart';
 import '../../features/pelamar/presentation/pages/dashboard_pelamar_page.dart';
+import '../../features/pelamar/presentation/pages/data_diri_page.dart';
+import '../../features/pelamar/presentation/pages/faq_page.dart';
 import '../../features/pelamar/presentation/pages/profil_pelamar_page.dart';
+import '../../features/pelamar/presentation/pages/ubah_kata_sandi_page.dart';
 import '../../features/pembayaran/presentation/pages/detail_transaksi_page.dart';
 import '../../features/perusahaan/presentation/pages/dashboard_perusahaan_page.dart';
 
@@ -30,6 +35,10 @@ class AppRouter {
   static const String detailLowongan = '/lowongan/detail';
   static const String formLamaran = '/lowongan/lamar';
   static const String profilPelamar = '/pelamar/profil';
+  static const String dataDiri = '/pelamar/data-diri';
+  static const String alamatPelamar = '/pelamar/alamat';
+  static const String faq = '/faq';
+  static const String ubahKataSandi = '/pelamar/ubah-kata-sandi';
   static const String detailTransaksi = '/transaksi/detail';
 
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
@@ -74,7 +83,7 @@ class AppRouter {
 
       case dashboardKandidat:
         return MaterialPageRoute(
-          builder: (_) => const DashboardPelamarPage(),
+          builder: (_) => const DashboardKandidatPage(),
           settings: settings,
         );
 
@@ -123,6 +132,30 @@ class AppRouter {
       case profilPelamar:
         return MaterialPageRoute(
           builder: (_) => const ProfilPelamarPage(),
+          settings: settings,
+        );
+
+      case dataDiri:
+        return MaterialPageRoute(
+          builder: (_) => const DataDiriPage(),
+          settings: settings,
+        );
+
+      case alamatPelamar:
+        return MaterialPageRoute(
+          builder: (_) => const AlamatPage(),
+          settings: settings,
+        );
+
+      case faq:
+        return MaterialPageRoute(
+          builder: (_) => const FaqPage(),
+          settings: settings,
+        );
+
+      case ubahKataSandi:
+        return MaterialPageRoute(
+          builder: (_) => const UbahKataSandiPage(),
           settings: settings,
         );
 
