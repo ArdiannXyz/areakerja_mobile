@@ -3,6 +3,7 @@ import '../../features/auth/presentation/pages/forgot_password_page.dart';
 import '../../features/auth/presentation/pages/login_page.dart';
 import '../../features/auth/presentation/pages/otp_verify_page.dart';
 import '../../features/auth/presentation/pages/register_page.dart';
+import '../../features/auth/presentation/pages/reset_password_page.dart';
 import '../../features/kandidat/presentation/pages/dashboard_kandidat_page.dart';
 import '../../features/lowongan/data/models/lowongan_model.dart';
 import '../../features/lowongan/presentation/pages/daftar_lowongan_page.dart';
@@ -42,6 +43,7 @@ class AppRouter {
   static const String faq = '/faq';
   static const String ubahKataSandi = '/pelamar/ubah-kata-sandi';
   static const String detailTransaksi = '/transaksi/detail';
+  static const String resetPassword = '/reset-password';
 
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
     switch (settings.name) {
@@ -74,6 +76,15 @@ class AppRouter {
         final email = args?['email']?.toString() ?? '';
         return MaterialPageRoute(
           builder: (_) => OtpVerifyPage(email: email),
+          settings: settings,
+        );
+
+      case resetPassword:
+        final args = settings.arguments as Map<String, dynamic>?;
+        final rpEmail = args?['email']?.toString() ?? '';
+        final rpOtp = args?['otp']?.toString() ?? '';
+        return MaterialPageRoute(
+          builder: (_) => ResetPasswordPage(email: rpEmail, otp: rpOtp),
           settings: settings,
         );
 

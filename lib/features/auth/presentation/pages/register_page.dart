@@ -13,6 +13,7 @@ import '../../data/models/login_request_model.dart';
 import '../bloc/auth_bloc.dart';
 import '../bloc/auth_event.dart';
 import '../bloc/auth_state.dart';
+import '../widgets/auth_success_dialogs.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -79,24 +80,27 @@ class _RegisterPageState extends State<RegisterPage> {
       body: BlocConsumer<AuthBloc, AuthState>(
         listener: (context, state) {
           if (state is Authenticated) {
-            AppSnackbar.showSuccess(
-              context,
-              'Akun berhasil didaftarkan! Selamat datang, ${state.user.name}',
+            // Tampilkan popup registrasi berhasil
+            AuthSuccessDialogHelper.showRegisterSuccess(
+              context: context,
+              userName: state.user.name,
+              userRole: state.user.role.value,
+              onContinue: () {
+                // Role-based Navigation setelah dialog ditutup
+                switch (state.user.role) {
+                  case UserRole.perusahaan:
+                    Navigator.of(context).pushNamedAndRemoveUntil('/dashboard-perusahaan', (route) => false);
+                    break;
+                  case UserRole.kandidat:
+                    Navigator.of(context).pushNamedAndRemoveUntil('/dashboard-kandidat', (route) => false);
+                    break;
+                  case UserRole.pelamar:
+                  default:
+                    Navigator.of(context).pushNamedAndRemoveUntil('/dashboard-pelamar', (route) => false);
+                    break;
+                }
+              },
             );
-
-            // Role-based Navigation
-            switch (state.user.role) {
-              case UserRole.perusahaan:
-                Navigator.of(context).pushNamedAndRemoveUntil('/dashboard-perusahaan', (route) => false);
-                break;
-              case UserRole.kandidat:
-                Navigator.of(context).pushNamedAndRemoveUntil('/dashboard-kandidat', (route) => false);
-                break;
-              case UserRole.pelamar:
-              default:
-                Navigator.of(context).pushNamedAndRemoveUntil('/dashboard-pelamar', (route) => false);
-                break;
-            }
           } else if (state is AuthFailureState) {
             AppSnackbar.showError(context, state.message);
           }
