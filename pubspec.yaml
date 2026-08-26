@@ -24,6 +24,19 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^6.0.0
+  flutter_launcher_icons: ^0.14.3
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/images/AK_logo.png"
+  min_sdk_android: 21
+  adaptive_icon_background: "#FFFFFF"
+  adaptive_icon_foreground: "assets/images/AK_logo.png"
+  adaptive_icon_inset: 30
+  remove_alpha_ios: true
+  web:
+    generate: false
 
 flutter:
   uses-material-design: true

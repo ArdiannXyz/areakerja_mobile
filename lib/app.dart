@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'core/api/api_client.dart';
-import 'core/constants/app_colors.dart';
 import 'core/constants/app_strings.dart';
 import 'core/constants/role_constants.dart';
 import 'core/router/app_router.dart';
@@ -25,6 +24,7 @@ import 'features/lowongan/presentation/bloc/lowongan_bloc.dart';
 import 'features/notifikasi/data/repositories/notifikasi_repository_impl.dart';
 import 'features/notifikasi/presentation/bloc/notifikasi_bloc.dart';
 import 'features/pelamar/data/repositories/pelamar_repository_impl.dart';
+import 'features/splash/presentation/pages/splash_screen_page.dart';
 
 class AreaKerjaApp extends StatelessWidget {
   final LocalStorageService localStorageService;
@@ -100,11 +100,32 @@ class AreaKerjaApp extends StatelessWidget {
   }
 }
 
-class _SplashAuthDecider extends StatelessWidget {
+class _SplashAuthDecider extends StatefulWidget {
   const _SplashAuthDecider();
 
   @override
+  State<_SplashAuthDecider> createState() => _SplashAuthDeciderState();
+}
+
+class _SplashAuthDeciderState extends State<_SplashAuthDecider> {
+  bool _animationCompleted = false;
+
+  void _onSplashComplete() {
+    if (mounted) {
+      setState(() {
+        _animationCompleted = true;
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    if (!_animationCompleted) {
+      return SplashScreenPage(
+        onAnimationComplete: _onSplashComplete,
+      );
+    }
+
     return BlocBuilder<AuthBloc, AuthState>(
       builder: (context, state) {
         if (state is Authenticated) {
@@ -119,52 +140,7 @@ class _SplashAuthDecider extends StatelessWidget {
           }
         }
 
-        if (state is Unauthenticated || state is AuthFailureState) {
-          return const LoginPage();
-        }
-
-        // Splash / Loading Screen
-        return Scaffold(
-          backgroundColor: AppColors.background,
-          body: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  width: 72,
-                  height: 72,
-                  decoration: BoxDecoration(
-                    color: AppColors.primarySurface,
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: const Icon(
-                    Icons.work_rounded,
-                    color: AppColors.primary,
-                    size: 38,
-                  ),
-                ),
-                const SizedBox(height: 16),
-                const Text(
-                  AppStrings.appName,
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.primary,
-                  ),
-                ),
-                const SizedBox(height: 24),
-                const SizedBox(
-                  width: 24,
-                  height: 24,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2.5,
-                    valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
+        return const LoginPage();
       },
     );
   }

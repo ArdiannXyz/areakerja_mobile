@@ -12,6 +12,8 @@ import '../../../auth/presentation/bloc/auth_state.dart';
 import '../../data/models/lowongan_model.dart';
 import '../bloc/lowongan_bloc.dart';
 
+import '../widgets/lamar_popup_dialogs.dart';
+
 class FormLamaranPage extends StatefulWidget {
   final LowonganModel lowongan;
 
@@ -65,67 +67,36 @@ class _FormLamaranPageState extends State<FormLamaranPage> {
 
   void _onSubmit() {
     if (_formKey.currentState?.validate() ?? false) {
-      final request = LamaranRequestModel(
-        lowonganId: widget.lowongan.id,
-        namaLengkap: _nameController.text.trim(),
-        email: _emailController.text.trim(),
-        nomorHp: _phoneController.text.trim(),
-        pendidikanTerakhir: _selectedEducation,
-        pengalamanTahun: '${_experienceController.text.trim()} Tahun',
-        ekspektasiGaji: _salaryController.text.trim(),
-        portofolioUrl: _portfolioController.text.trim(),
-        coverLetter: _coverLetterController.text.trim(),
-        resumeFileName: _selectedFileName,
-      );
+      LamarDialogHelper.showConfirmationDialog(
+        context: context,
+        namaPerusahaan: widget.lowongan.namaPerusahaan,
+        onConfirm: () {
+          final request = LamaranRequestModel(
+            lowonganId: widget.lowongan.id,
+            namaLengkap: _nameController.text.trim(),
+            email: _emailController.text.trim(),
+            nomorHp: _phoneController.text.trim(),
+            pendidikanTerakhir: _selectedEducation,
+            pengalamanTahun: '${_experienceController.text.trim()} Tahun',
+            ekspektasiGaji: _salaryController.text.trim(),
+            portofolioUrl: _portfolioController.text.trim(),
+            coverLetter: _coverLetterController.text.trim(),
+            resumeFileName: _selectedFileName,
+          );
 
-      context.read<LowonganBloc>().add(SubmitLamaranEvent(request));
+          context.read<LowonganBloc>().add(SubmitLamaranEvent(request));
+        },
+      );
     }
   }
 
   void _showSuccessDialog(String message) {
-    showDialog(
+    LamarDialogHelper.showSuccessDialog(
       context: context,
-      barrierDismissible: false,
-      builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        content: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 10),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                width: 64,
-                height: 64,
-                decoration: const BoxDecoration(
-                  color: AppColors.successLight,
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(Icons.check_rounded, color: AppColors.success, size: 36),
-              ),
-              const SizedBox(height: 16),
-              Text(
-                'Lamaran Terkirim!',
-                style: AppTextStyles.heading3,
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 8),
-              Text(
-                message,
-                style: AppTextStyles.bodySmall,
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 20),
-              PrimaryButton(
-                text: 'Kembali ke Lowongan',
-                onPressed: () {
-                  Navigator.of(ctx).pop();
-                  Navigator.of(context).pop();
-                },
-              ),
-            ],
-          ),
-        ),
-      ),
+      message: message.isNotEmpty ? message : 'Lamaran anda telah dikirim',
+      onDismiss: () {
+        Navigator.of(context).pop();
+      },
     );
   }
 

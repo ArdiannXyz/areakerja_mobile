@@ -18,10 +18,12 @@ import '../../features/pelamar/presentation/pages/ubah_kata_sandi_page.dart';
 import '../../features/pembayaran/presentation/pages/detail_transaksi_page.dart';
 import '../../features/perusahaan/presentation/pages/dashboard_perusahaan_page.dart';
 
+import '../../features/splash/presentation/pages/splash_screen_page.dart';
+
 class AppRouter {
   AppRouter._();
 
-  static const String splash = '/';
+  static const String splash = '/splash';
   static const String login = '/login';
   static const String register = '/register';
   static const String forgotPassword = '/forgot-password';
@@ -43,6 +45,12 @@ class AppRouter {
 
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
     switch (settings.name) {
+      case splash:
+        return MaterialPageRoute(
+          builder: (_) => const SplashScreenPage(),
+          settings: settings,
+        );
+
       case login:
         return MaterialPageRoute(
           builder: (_) => const LoginPage(),
