@@ -1,215 +1,178 @@
-# AreaKerja Mobile
+# 🚀 AreaKerja Mobile
 
 <p align="center">
-  <strong>Aplikasi Mobile Platform Lowongan Kerja AreaKerja</strong>
+  <strong>Platform Karier & Rekrutmen Berbasis Mobile</strong>
 </p>
 
 <p align="center">
-  Dibangun menggunakan Flutter dan terintegrasi dengan REST API Laravel.
+  Menghubungkan pencari kerja dengan perusahaan dalam satu platform yang mudah, cepat, dan modern.
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/Flutter-3.x-02569B?style=for-the-badge&logo=flutter&logoColor=white" alt="Flutter">
+  <img src="https://img.shields.io/badge/Dart-3.x-0175C2?style=for-the-badge&logo=dart&logoColor=white" alt="Dart">
+  <img src="https://img.shields.io/badge/Laravel-API-FF2D20?style=for-the-badge&logo=laravel&logoColor=white" alt="Laravel">
+  <img src="https://img.shields.io/badge/MySQL-Database-4479A1?style=for-the-badge&logo=mysql&logoColor=white" alt="MySQL">
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/State%20Management-BLoC-7C4DFF?style=flat-square" alt="BLoC">
+  <img src="https://img.shields.io/badge/HTTP-Dio-00A8E8?style=flat-square" alt="Dio">
+  <img src="https://img.shields.io/badge/Routing-GoRouter-00B894?style=flat-square" alt="GoRouter">
+  <img src="https://img.shields.io/badge/Status-In%20Development-F39C12?style=flat-square" alt="Development">
 </p>
 
 ---
 
-## 📱 Tentang AreaKerja Mobile
+## 📖 About
 
-**AreaKerja Mobile** adalah aplikasi mobile untuk platform pencarian dan penyediaan lowongan kerja.
+**AreaKerja Mobile** adalah aplikasi mobile yang dikembangkan sebagai bagian dari ekosistem **AreaKerja**, sebuah platform yang mempertemukan **job seeker** dengan **perusahaan**.
 
-Aplikasi ini menghubungkan **pencari kerja** dengan **perusahaan** dalam satu platform. Pengguna dapat mencari lowongan, melihat detail pekerjaan, mengirim lamaran, mengelola profil/CV, serta memantau proses lamaran.
+Aplikasi ini dirancang untuk memberikan pengalaman pencarian kerja yang lebih praktis melalui perangkat mobile, mulai dari mencari lowongan, melihat detail pekerjaan, mengelola profil dan CV, hingga mengirim serta memantau lamaran.
 
-Sementara itu, perusahaan dapat membuat dan mengelola lowongan pekerjaan serta melihat kandidat yang melamar.
+Untuk sisi perusahaan, aplikasi menyediakan berbagai fungsi untuk mengelola lowongan pekerjaan dan kandidat yang melamar.
 
-Aplikasi mobile ini menggunakan **Laravel API** sebagai backend dan **MySQL** sebagai database.
+### 🎯 Vision
 
----
+> **Connecting Talent with Opportunity.**
 
-## 🎯 Tujuan
-
-AreaKerja Mobile dikembangkan untuk:
-
-* Mempermudah pencari kerja menemukan lowongan pekerjaan.
-* Mempermudah pengguna melamar pekerjaan melalui perangkat mobile.
-* Mempermudah perusahaan membuat dan mengelola lowongan.
-* Mempermudah perusahaan melihat kandidat yang melamar.
-* Menyediakan pengalaman pencarian kerja yang lebih praktis melalui aplikasi mobile.
+AreaKerja bertujuan membantu talenta menemukan kesempatan kerja yang sesuai sekaligus membantu perusahaan menemukan kandidat yang tepat.
 
 ---
 
-## 👥 Role Pengguna
+# ✨ Key Features
 
-AreaKerja Mobile memiliki dua role utama:
+## 👤 Job Seeker
 
-### 1. Job Seeker / Pelamar
+Pencari kerja dapat:
 
-Pengguna yang mencari dan melamar pekerjaan.
-
-Fitur utama:
-
-* Registrasi dan login
-* Mengelola profil
-* Mengelola CV
-* Mencari lowongan pekerjaan
-* Filter lowongan
-* Melihat detail lowongan
-* Menyimpan lowongan
-* Melamar pekerjaan
-* Melihat riwayat lamaran
-* Melihat status lamaran
-* Melihat tips seputar pekerjaan
-
-### 2. Company / Perusahaan
-
-Pengguna yang mewakili perusahaan.
-
-Fitur utama:
-
-* Registrasi dan login
-* Mengelola profil perusahaan
-* Membuat lowongan pekerjaan
-* Mengedit lowongan
-* Menghapus lowongan
-* Melihat daftar lowongan perusahaan
-* Melihat kandidat yang melamar
-* Melihat informasi/CV kandidat
+* 🔐 Register & Login
+* 👤 Mengelola profil
+* 📄 Mengelola CV
+* 🎓 Mengelola pendidikan
+* 💼 Mengelola pengalaman kerja
+* 🛠️ Mengelola skill
+* 🔍 Mencari lowongan pekerjaan
+* 🎯 Filter lowongan berdasarkan kebutuhan
+* 📋 Melihat detail lowongan
+* ❤️ Menyimpan lowongan
+* 📤 Mengirim lamaran
+* 📊 Memantau status lamaran
+* 📜 Melihat riwayat lamaran
+* 💡 Membaca tips dunia kerja
 
 ---
 
-## 🚀 Fitur Utama
+## 🏢 Company
 
-### Authentication
+Perusahaan dapat:
 
-* Login
-* Register
-* Logout
-* Role-based access
-* Session/token management
-
-### Lowongan Pekerjaan
-
-* Daftar lowongan
-* Pencarian lowongan
-* Filter lowongan
-* Detail lowongan
-* Simpan lowongan
-* Lamar pekerjaan
-
-### Profil & CV
-
-* Profil pengguna
-* Data pribadi
-* Informasi pendidikan
-* Pengalaman kerja
-* Skill
-* CV
-
-### Lamaran
-
-* Melamar pekerjaan
-* Riwayat lamaran
-* Status lamaran
-* Detail lamaran
-
-### Perusahaan
-
-* Profil perusahaan
-* Membuat lowongan
-* Mengelola lowongan
-* Melihat daftar pelamar
-* Melihat CV kandidat
-
-### Tips
-
-* Tips mencari pekerjaan
-* Tips membuat CV
-* Informasi seputar dunia kerja
+* 🔐 Register & Login
+* 🏢 Mengelola profil perusahaan
+* 📢 Membuat lowongan pekerjaan
+* ✏️ Mengedit lowongan
+* 🗑️ Menghapus lowongan
+* 📋 Melihat daftar lowongan
+* 👥 Melihat kandidat
+* 📄 Melihat CV kandidat
+* 📊 Mengelola proses rekrutmen
 
 ---
 
-## 🏗️ Arsitektur Aplikasi
-
-AreaKerja Mobile menggunakan pendekatan **layered architecture** dengan pemisahan antara presentation, domain, dan data.
+# 🧩 Application Modules
 
 ```text
-Flutter UI
-    │
-    ▼
-   BLoC
-    │
-    ▼
- Use Case
-    │
-    ▼
- Repository
-    │
-    ▼
- Data Source
-    │
-    ▼
-   Dio
-    │
-    ▼
-Laravel REST API
-    │
-    ▼
-   MySQL
-```
-
-### Alur Data
-
-```text
-User
- │
- ▼
-Flutter Application
- │
- ▼
-BLoC
- │
- ▼
-Use Case
- │
- ▼
-Repository
- │
- ▼
-API Data Source
- │
- ▼
-Dio HTTP Client
- │
- ▼
-Laravel API
- │
- ▼
-MySQL
+┌─────────────────────────────────────────────┐
+│              AreaKerja Mobile               │
+├─────────────────────────────────────────────┤
+│                                             │
+│  🔐 Authentication                          │
+│      ├── Login                              │
+│      ├── Register                           │
+│      └── Logout                             │
+│                                             │
+│  🔍 Job Discovery                           │
+│      ├── Search                             │
+│      ├── Filter                             │
+│      ├── Job Detail                         │
+│      └── Saved Jobs                         │
+│                                             │
+│  📤 Application                             │
+│      ├── Apply Job                          │
+│      ├── Application History                │
+│      └── Application Status                 │
+│                                             │
+│  👤 Profile                                 │
+│      ├── Personal Information               │
+│      ├── CV                                 │
+│      ├── Education                          │
+│      ├── Experience                         │
+│      └── Skills                             │
+│                                             │
+│  🏢 Company                                 │
+│      ├── Company Profile                    │
+│      ├── Job Management                     │
+│      └── Applicant Management               │
+│                                             │
+└─────────────────────────────────────────────┘
 ```
 
 ---
 
-## 🛠️ Tech Stack
+# 🏗️ Architecture
 
-### Mobile
+AreaKerja Mobile menggunakan pendekatan **Clean Architecture** dengan pemisahan antara:
 
-| Teknologi              | Penggunaan                |
-| ---------------------- | ------------------------- |
-| Flutter                | Mobile framework          |
-| Dart                   | Programming language      |
-| BLoC                   | State management          |
-| Dio                    | HTTP client               |
-| GoRouter               | Navigation & routing      |
-| Flutter Secure Storage | Penyimpanan data sensitif |
-| Shared Preferences     | Local preferences         |
+* Presentation Layer
+* Domain Layer
+* Data Layer
 
-### Backend
+Arsitektur utama:
 
-| Teknologi | Penggunaan                   |
-| --------- | ---------------------------- |
-| Laravel   | REST API                     |
-| PHP       | Backend programming language |
-| MySQL     | Database                     |
+```text
+                     ┌──────────────────┐
+                     │    Flutter UI    │
+                     └────────┬─────────┘
+                              │
+                              ▼
+                     ┌──────────────────┐
+                     │      BLoC        │
+                     └────────┬─────────┘
+                              │
+                              ▼
+                     ┌──────────────────┐
+                     │     Use Case     │
+                     └────────┬─────────┘
+                              │
+                              ▼
+                     ┌──────────────────┐
+                     │   Repository     │
+                     └────────┬─────────┘
+                              │
+                              ▼
+                     ┌──────────────────┐
+                     │   Data Source    │
+                     └────────┬─────────┘
+                              │
+                              ▼
+                     ┌──────────────────┐
+                     │       Dio        │
+                     └────────┬─────────┘
+                              │
+                              ▼
+                     ┌──────────────────┐
+                     │ Laravel REST API │
+                     └────────┬─────────┘
+                              │
+                              ▼
+                     ┌──────────────────┐
+                     │      MySQL       │
+                     └──────────────────┘
+```
 
 ---
 
-## 📂 Struktur Project
+# 📂 Project Structure
 
 ```text
 areakerja-mobile/
@@ -233,13 +196,13 @@ areakerja-mobile/
 │   ├── core/
 │   │   ├── api/
 │   │   │   ├── dio_client.dart
-│   │   │   ├── endpoints.dart
-│   │   │   ├── interceptors/
-│   │   │   └── response/
+│   │   │   ├── api_endpoints.dart
+│   │   │   └── interceptors/
 │   │   │
 │   │   ├── constants/
 │   │   ├── errors/
 │   │   ├── router/
+│   │   │   └── app_router.dart
 │   │   ├── storage/
 │   │   ├── theme/
 │   │   └── utils/
@@ -255,12 +218,22 @@ areakerja-mobile/
 │       │   ├── domain/
 │       │   └── presentation/
 │       │
+│       ├── home/
+│       │   ├── data/
+│       │   ├── domain/
+│       │   └── presentation/
+│       │
 │       ├── lowongan/
 │       │   ├── data/
 │       │   ├── domain/
 │       │   └── presentation/
 │       │
-│       ├── pelamar/
+│       ├── lamaran/
+│       │   ├── data/
+│       │   ├── domain/
+│       │   └── presentation/
+│       │
+│       ├── profile/
 │       │   ├── data/
 │       │   ├── domain/
 │       │   └── presentation/
@@ -281,113 +254,211 @@ areakerja-mobile/
 
 ---
 
-## 📦 Penjelasan Struktur
+# 🧱 Feature Architecture
 
-### `core/`
-
-Berisi konfigurasi dan komponen inti aplikasi yang digunakan oleh banyak feature.
-
-Contohnya:
-
-```text
-core/
-├── api/
-├── constants/
-├── errors/
-├── router/
-├── storage/
-├── theme/
-└── utils/
-```
-
-### `features/`
-
-Berisi fitur utama aplikasi.
-
-Setiap feature dipisahkan menjadi:
+Setiap feature menggunakan struktur:
 
 ```text
 feature/
+│
 ├── data/
+│   ├── datasources/
+│   ├── models/
+│   └── repositories/
+│
 ├── domain/
+│   ├── entities/
+│   ├── repositories/
+│   └── usecases/
+│
 └── presentation/
+    ├── bloc/
+    ├── pages/
+    └── widgets/
 ```
 
-#### Data
+Contoh module authentication:
 
-Berisi:
-
-* API data source
-* Repository implementation
-* DTO/model response API
-
-#### Domain
-
-Berisi:
-
-* Entity
-* Repository interface
-* Use case
-
-#### Presentation
-
-Berisi:
-
-* Page
-* Widget
-* BLoC
-* Event
-* State
+```text
+auth/
+│
+├── data/
+│   ├── datasources/
+│   │   └── auth_remote_datasource.dart
+│   │
+│   ├── models/
+│   │   └── login_response_model.dart
+│   │
+│   └── repositories/
+│       └── auth_repository_impl.dart
+│
+├── domain/
+│   ├── entities/
+│   │   └── user.dart
+│   │
+│   ├── repositories/
+│   │   └── auth_repository.dart
+│   │
+│   └── usecases/
+│       └── login.dart
+│
+└── presentation/
+    ├── bloc/
+    │   ├── auth_bloc.dart
+    │   ├── auth_event.dart
+    │   └── auth_state.dart
+    │
+    ├── pages/
+    │   └── login_page.dart
+    │
+    └── widgets/
+```
 
 ---
 
-## 🔐 Environment Configuration
+# 🛠️ Tech Stack
 
-Konfigurasi API disimpan menggunakan environment variable.
+## Mobile Application
 
-Buat file:
+| Technology                 | Purpose                         |
+| -------------------------- | ------------------------------- |
+| **Flutter**                | Cross-platform mobile framework |
+| **Dart**                   | Programming language            |
+| **flutter_bloc**           | State management                |
+| **Dio**                    | HTTP client                     |
+| **GoRouter**               | Application routing             |
+| **Flutter Secure Storage** | Secure token storage            |
+| **Shared Preferences**     | Local preferences               |
+| **flutter_dotenv**         | Environment configuration       |
+| **Equatable**              | State comparison                |
+
+## Backend
+
+| Technology  | Purpose             |
+| ----------- | ------------------- |
+| **Laravel** | REST API            |
+| **PHP**     | Backend language    |
+| **MySQL**   | Relational database |
+
+---
+
+# 🔌 API Integration
+
+AreaKerja Mobile berkomunikasi dengan backend melalui **REST API**.
+
+Contoh struktur endpoint:
 
 ```text
-.env
+/api/v1
+│
+├── /auth
+│   ├── POST /login
+│   ├── POST /register
+│   └── POST /logout
+│
+├── /users
+│   └── GET /profile
+│
+├── /lowongan
+│   ├── GET /
+│   ├── GET /{id}
+│   ├── POST /
+│   ├── PUT /{id}
+│   └── DELETE /{id}
+│
+├── /lamaran
+│   ├── GET /
+│   ├── POST /
+│   └── GET /{id}
+│
+└── /perusahaan
+    ├── GET /profile
+    └── PUT /profile
 ```
 
-Contoh:
+> Endpoint aktual mengikuti implementasi Laravel API pada backend AreaKerja.
 
-```env
-API_BASE_URL=http://127.0.0.1:8000/api
-```
+---
 
-Jangan memasukkan file `.env` ke repository apabila terdapat informasi sensitif.
+# 🔐 Authentication Flow
 
-Gunakan:
+Authentication menggunakan token dari backend.
 
 ```text
-.env.example
+┌──────────────┐
+│    Login     │
+└──────┬───────┘
+       │
+       ▼
+┌──────────────┐
+│ Laravel API  │
+└──────┬───────┘
+       │
+       ▼
+┌──────────────┐
+│ Access Token │
+└──────┬───────┘
+       │
+       ▼
+┌────────────────────┐
+│ Secure Local       │
+│ Storage             │
+└──────┬─────────────┘
+       │
+       ▼
+┌────────────────────┐
+│ Authenticated API  │
+│ Request             │
+└────────────────────┘
 ```
 
-sebagai template konfigurasi.
+Token tidak disimpan secara hard-code di source code.
 
-Contoh:
+---
+
+# 🌐 Environment Configuration
+
+Gunakan `.env` untuk menyimpan konfigurasi environment.
+
+### `.env.example`
 
 ```env
 API_BASE_URL=
+API_VERSION=v1
+```
+
+### `.env`
+
+```env
+API_BASE_URL=http://127.0.0.1:8000/api
+API_VERSION=v1
+```
+
+> ⚠️ **Jangan commit `.env` ke Git.**
+
+Pastikan `.gitignore` berisi:
+
+```gitignore
+.env
 ```
 
 ---
 
-## 💻 Requirements
+# 💻 Requirements
 
-Pastikan sudah menginstall:
+Sebelum menjalankan project, pastikan environment sudah memiliki:
 
 * Flutter SDK
 * Dart SDK
-* Android Studio atau Android SDK
+* Android Studio / Android SDK
 * VS Code
 * Git
-* Laravel API
+* PHP
+* Composer
+* Laravel
 * MySQL
 
-Cek instalasi Flutter:
+Periksa environment Flutter:
 
 ```bash
 flutter doctor
@@ -395,27 +466,31 @@ flutter doctor
 
 ---
 
-## ⚙️ Installation
+# ⚡ Getting Started
 
-### 1. Clone Repository
+## 1. Clone Repository
 
 ```bash
 git clone <repository-url>
 ```
 
-Masuk ke directory project:
+Masuk ke project:
 
 ```bash
 cd areakerja-mobile
 ```
 
-### 2. Install Dependencies
+---
+
+## 2. Install Dependencies
 
 ```bash
 flutter pub get
 ```
 
-### 3. Setup Environment
+---
+
+## 3. Setup Environment
 
 Copy:
 
@@ -429,152 +504,50 @@ menjadi:
 .env
 ```
 
-Kemudian sesuaikan URL backend:
+Kemudian konfigurasi:
 
 ```env
 API_BASE_URL=http://127.0.0.1:8000/api
+API_VERSION=v1
 ```
 
-### 4. Jalankan Laravel API
+---
 
-Masuk ke project backend:
+## 4. Jalankan Backend
+
+Pastikan Laravel API sudah berjalan.
 
 ```bash
 php artisan serve
 ```
 
-Laravel biasanya berjalan pada:
+Default:
 
 ```text
 http://127.0.0.1:8000
 ```
 
-Sesuaikan `API_BASE_URL` dengan environment yang digunakan.
+---
 
-### 5. Jalankan Flutter
+## 5. Jalankan Flutter
 
-```bash
-flutter run
-```
-
-Untuk melihat device yang tersedia:
+Cek device:
 
 ```bash
 flutter devices
 ```
 
----
+Kemudian:
 
-## 🌐 API Integration
-
-AreaKerja Mobile berkomunikasi dengan backend menggunakan REST API.
-
-Contoh endpoint:
-
-```text
-/api/v1/login
-/api/v1/register
-/api/v1/lowongan
-/api/v1/lowongan/{id}
-/api/v1/lamaran
-/api/v1/profile
-/api/v1/perusahaan
-```
-
-Endpoint aktual mengikuti konfigurasi API pada backend Laravel.
-
----
-
-## 🔑 Authentication
-
-Authentication menggunakan token yang diberikan oleh Laravel API.
-
-Alur authentication:
-
-```text
-Login
-  │
-  ▼
-Laravel API
-  │
-  ▼
-Access Token
-  │
-  ▼
-Flutter Storage
-  │
-  ▼
-Authenticated Request
-```
-
-Token kemudian digunakan pada request API yang membutuhkan autentikasi.
-
----
-
-## 🧭 Routing
-
-Navigasi aplikasi menggunakan **GoRouter**.
-
-Routing mempertimbangkan role pengguna.
-
-Contoh konsep:
-
-```text
-Login
- │
- ├── Job Seeker
- │      └── Job Seeker Dashboard
- │
- └── Company
-        └── Company Dashboard
-```
-
-Route yang membutuhkan authentication dilindungi menggunakan route guard.
-
----
-
-## 🔄 State Management
-
-Aplikasi menggunakan **BLoC** untuk mengelola state.
-
-Contoh:
-
-```text
-UI
- │
- ▼
-BLoC Event
- │
- ▼
-Use Case
- │
- ▼
-Repository
- │
- ▼
-API
- │
- ▼
-BLoC State
- │
- ▼
-UI
-```
-
-Contoh state:
-
-```text
-Initial
-Loading
-Success
-Failure
+```bash
+flutter run
 ```
 
 ---
 
-## 🧪 Testing
+# 🧪 Testing
 
-Menjalankan seluruh test:
+Menjalankan unit/widget test:
 
 ```bash
 flutter test
@@ -592,184 +565,496 @@ Format kode:
 dart format .
 ```
 
+Sebelum melakukan Pull Request, pastikan ketiga command tersebut sudah dijalankan.
+
 ---
 
-## 🌿 Git Workflow
+# 🧭 Routing
 
-Project menggunakan branch berdasarkan feature.
+Routing menggunakan **GoRouter**.
 
-Contoh:
+Secara umum:
+
+```text
+                    ┌────────────┐
+                    │    App     │
+                    └─────┬──────┘
+                          │
+                    ┌─────▼──────┐
+                    │ Auth Check │
+                    └─────┬──────┘
+                          │
+              ┌───────────┴───────────┐
+              │                       │
+          Not Login                Login
+              │                       │
+              ▼                       ▼
+        Login/Register          Check Role
+                                      │
+                          ┌───────────┴───────────┐
+                          │                       │
+                      Job Seeker              Company
+                          │                       │
+                          ▼                       ▼
+                    User Home              Company Home
+```
+
+Route yang membutuhkan authentication dilindungi menggunakan route guard.
+
+---
+
+# 🔄 State Management
+
+State management menggunakan **BLoC**.
+
+Contoh alur:
+
+```text
+User Action
+    │
+    ▼
+   Event
+    │
+    ▼
+   BLoC
+    │
+    ▼
+ Use Case
+    │
+    ▼
+ Repository
+    │
+    ▼
+    API
+    │
+    ▼
+ Repository
+    │
+    ▼
+   BLoC
+    │
+    ▼
+   State
+    │
+    ▼
+    UI
+```
+
+State umum:
+
+```text
+Initial
+   ↓
+Loading
+   ↓
+Success
+   │
+   └── Failure
+```
+
+---
+
+# 🌿 Git Workflow
+
+Project menggunakan Git Flow sederhana.
 
 ```text
 main
  │
  └── develop
       │
-      ├── feature/api/mobile
       ├── feature/auth
+      ├── feature/api/mobile
       ├── feature/lowongan
+      ├── feature/lamaran
+      ├── feature/profile
       └── feature/perusahaan
 ```
 
-### Membuat branch baru
+### Branch
+
+| Branch      | Fungsi              |
+| ----------- | ------------------- |
+| `main`      | Production / stable |
+| `develop`   | Development         |
+| `feature/*` | Pengembangan fitur  |
+
+---
+
+## 🔀 Membuat Feature Branch
+
+Selalu mulai dari `develop`:
 
 ```bash
 git checkout develop
 git pull origin develop
+```
+
+Buat branch:
+
+```bash
 git checkout -b feature/nama-feature
 ```
 
-### Commit
-
-Gunakan commit message yang jelas:
+Contoh:
 
 ```bash
-git add .
-git commit -m "feat: add job listing API integration"
+git checkout -b feature/auth
 ```
 
-Contoh lainnya:
+---
+
+## 📝 Commit Convention
+
+Gunakan format:
 
 ```text
-feat: add login page
-feat: add job detail
-fix: fix authentication token
-fix: fix job filtering
-refactor: improve repository structure
-docs: update README
+type: description
 ```
 
-### Push
+Contoh:
 
 ```bash
-git push origin feature/nama-feature
+git commit -m "feat: add login page"
+git commit -m "feat: integrate login API"
+git commit -m "fix: fix authentication token"
+git commit -m "fix: fix job filtering"
+git commit -m "refactor: improve repository structure"
+git commit -m "docs: update README"
 ```
 
-Kemudian buat Pull Request menuju:
+### Commit Types
+
+| Type       | Penggunaan              |
+| ---------- | ----------------------- |
+| `feat`     | Fitur baru              |
+| `fix`      | Perbaikan bug           |
+| `refactor` | Perubahan struktur kode |
+| `docs`     | Dokumentasi             |
+| `test`     | Testing                 |
+| `chore`    | Maintenance             |
+
+---
+
+# 🔀 Pull Request Workflow
 
 ```text
-develop
+Create Branch
+      │
+      ▼
+ Development
+      │
+      ▼
+   Testing
+      │
+      ▼
+   Commit
+      │
+      ▼
+    Push
+      │
+      ▼
+ Pull Request
+      │
+      ▼
+ Code Review
+      │
+      ▼
+ Merge → develop
+```
+
+Jangan melakukan development langsung pada:
+
+```text
+main
 ```
 
 ---
 
-## 👨‍💻 Development Rules
+# 👥 Development Team
 
-Untuk menjaga project tetap rapi:
+AreaKerja Mobile dikembangkan oleh **2 developer**.
 
-1. Jangan langsung melakukan development pada `main`.
-2. Gunakan `develop` sebagai branch development.
-3. Gunakan feature branch untuk setiap fitur.
-4. Jangan commit file `.env`.
-5. Jangan menyimpan API key atau credential di repository.
-6. Gunakan BLoC untuk state management.
-7. Pisahkan logic dari UI.
-8. Gunakan repository pattern untuk komunikasi data.
-9. Gunakan model yang konsisten dengan response API.
-10. Jalankan `flutter analyze` sebelum melakukan push.
+### Developer 1 — Mobile Core & API
 
----
+Fokus:
 
-## 🚧 Roadmap
-
-Fitur yang direncanakan untuk pengembangan berikutnya:
-
-* [ ] Candidate / Talent Hunter
-* [ ] Notification
-* [ ] Payment
-* [ ] Coin / Subscription
-* [ ] Admin Mobile
-* [ ] Peningkatan sistem rekomendasi lowongan
-* [ ] Peningkatan UX/UI
-* [ ] Push notification
-* [ ] Optimasi performa aplikasi
-
----
-
-## 📌 MVP Scope
-
-Fokus versi awal AreaKerja Mobile adalah:
-
-### Job Seeker
-
+* Project architecture
+* API client
+* Dio
 * Authentication
+* Token management
+* Secure storage
+* Routing
+* Core utilities
+
+### Developer 2 — UI & Feature
+
+Fokus:
+
+* UI/UX
+* Home
+* Lowongan
+* Lamaran
 * Profile
-* CV
-* Search lowongan
-* Filter lowongan
-* Detail lowongan
-* Apply job
-* Saved jobs
-* Application history
-* Tips pekerjaan
+* Company
+* Reusable widgets
 
-### Company
-
-* Authentication
-* Company profile
-* Create job
-* Manage job
-* View applicants
-* View candidate CV
-
-Fitur seperti **Talent Hunter, notification, payment, coin/subscription, dan admin mobile** berada di tahap pengembangan selanjutnya.
+Pembagian dapat disesuaikan dengan kebutuhan project.
 
 ---
 
-## 🤝 Contribution
+# 📋 Development Roadmap
 
-Kontribusi dilakukan melalui feature branch.
+## Phase 1 — Project Foundation
 
-Flow:
+* [x] Project initialization
+* [x] Git repository
+* [x] Basic folder structure
+* [ ] Environment configuration
+* [ ] Dio configuration
+* [ ] API client
+* [ ] Error handling
+* [ ] Routing
+* [ ] Theme
+
+## Phase 2 — Authentication
+
+* [ ] Login
+* [ ] Register
+* [ ] Logout
+* [ ] Token management
+* [ ] Session management
+* [ ] Role-based routing
+
+## Phase 3 — Job Seeker
+
+* [ ] Home
+* [ ] Job listing
+* [ ] Search
+* [ ] Filter
+* [ ] Job detail
+* [ ] Saved jobs
+* [ ] Apply job
+
+## Phase 4 — Application
+
+* [ ] Application history
+* [ ] Application detail
+* [ ] Application status
+* [ ] Application tracking
+
+## Phase 5 — Profile & CV
+
+* [ ] Profile
+* [ ] Edit profile
+* [ ] CV
+* [ ] Education
+* [ ] Experience
+* [ ] Skills
+
+## Phase 6 — Company
+
+* [ ] Company dashboard
+* [ ] Company profile
+* [ ] Create job
+* [ ] Edit job
+* [ ] Delete job
+* [ ] Applicant list
+* [ ] Candidate detail
+* [ ] Candidate CV
+
+## Phase 7 — Advanced Features
+
+* [ ] Push notification
+* [ ] Talent Hunter
+* [ ] Recommendation system
+* [ ] Payment
+* [ ] Subscription
+* [ ] Coin system
+* [ ] Admin mobile
+
+---
+
+# 🔒 Security Guidelines
+
+Beberapa aturan keamanan:
+
+* Jangan commit `.env`.
+* Jangan menyimpan password di source code.
+* Jangan menyimpan API key secara hard-code.
+* Gunakan secure storage untuk token.
+* Validasi input dari user.
+* Jangan mempercayai data dari client.
+* Semua authorization tetap harus divalidasi oleh backend.
+* Jangan menampilkan informasi sensitif pada log production.
+
+---
+
+# 📐 Development Guidelines
+
+Untuk menjaga codebase tetap konsisten:
+
+### 1. Pisahkan Business Logic
+
+Hindari:
 
 ```text
-develop
-   │
-   ▼
-Create Feature Branch
-   │
-   ▼
-Development
-   │
-   ▼
-Testing
-   │
-   ▼
-Commit
-   │
-   ▼
-Push
-   │
-   ▼
-Pull Request
-   │
-   ▼
-Code Review
-   │
-   ▼
-Merge → develop
+UI → Dio → API
 ```
 
-Sebelum membuat Pull Request, pastikan:
+Gunakan:
+
+```text
+UI
+ ↓
+BLoC
+ ↓
+Use Case
+ ↓
+Repository
+ ↓
+Data Source
+ ↓
+API
+```
+
+### 2. Gunakan Reusable Widget
+
+Jika komponen digunakan berkali-kali, letakkan di:
+
+```text
+shared/widgets/
+```
+
+### 3. Feature Tidak Saling Bergantung Secara Berlebihan
+
+Contoh:
+
+```text
+features/
+├── auth/
+├── lowongan/
+├── lamaran/
+└── profile/
+```
+
+Setiap feature harus memiliki tanggung jawab yang jelas.
+
+---
+
+# 📸 Screenshots
+
+Screenshot aplikasi dapat ditambahkan di folder:
+
+```text
+docs/
+├── login.png
+├── register.png
+├── home.png
+├── job-list.png
+├── job-detail.png
+├── application.png
+└── profile.png
+```
+
+Kemudian tampilkan pada README:
+
+```html
+<p align="center">
+  <img src="docs/login.png" width="200">
+  <img src="docs/home.png" width="200">
+  <img src="docs/job-detail.png" width="200">
+  <img src="docs/profile.png" width="200">
+</p>
+```
+
+---
+
+# 🤝 Contribution
+
+Contribution dilakukan melalui feature branch.
+
+Sebelum membuat Pull Request:
 
 ```bash
+flutter pub get
 flutter analyze
 flutter test
 dart format .
 ```
 
-tidak menghasilkan masalah yang belum diselesaikan.
+Pastikan:
+
+* Tidak ada error analyzer.
+* Tidak ada test yang gagal.
+* Tidak ada credential yang ikut ter-commit.
+* Code mengikuti struktur project.
+* Commit message sesuai convention.
+* Tidak mengubah file milik feature lain tanpa koordinasi.
 
 ---
 
-## 📄 License
+# 🐛 Bug Report
 
-Project ini dikembangkan untuk kebutuhan pengembangan platform **AreaKerja**.
+Jika menemukan bug, sertakan:
+
+```text
+1. Deskripsi masalah
+2. Langkah untuk reproduce
+3. Expected result
+4. Actual result
+5. Screenshot jika diperlukan
+6. Device / OS
+7. Flutter version
+```
 
 ---
 
-## 👨‍💻 Development Team
+# 💡 Future Development
 
-**AreaKerja Mobile Development Team**
+AreaKerja Mobile dirancang untuk terus dikembangkan menjadi platform karier yang lebih lengkap.
 
-> Project ini dikembangkan menggunakan Flutter sebagai aplikasi mobile dan Laravel REST API sebagai backend.
+Pengembangan ke depan dapat mencakup:
+
+```text
+                    AreaKerja
+                        │
+          ┌─────────────┼─────────────┐
+          │             │             │
+          ▼             ▼             ▼
+      Job Seeker     Company        Admin
+          │             │             │
+          ▼             ▼             ▼
+      Find Job      Post Job       Manage
+          │             │             │
+          ▼             ▼             ▼
+       Apply       Candidates      Platform
+          │             │
+          └──────┬──────┘
+                 ▼
+          Talent Matching
+                 │
+                 ▼
+         Better Opportunity
+```
+
+Target akhirnya adalah membangun ekosistem yang mempertemukan **talent, opportunity, dan company** secara lebih efektif.
+
+---
+
+# 📄 License
+
+Project **AreaKerja Mobile** dikembangkan untuk kebutuhan pengembangan platform AreaKerja.
+
+---
+
+<p align="center">
+
+### 🚀 AreaKerja Mobile
+
+**Connecting Talent with Opportunity**
+
+Built with ❤️ using **Flutter + Laravel**
+
+</p>
