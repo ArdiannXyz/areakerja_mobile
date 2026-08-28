@@ -7,11 +7,15 @@ class DaftarKandidatFlowSheet extends StatefulWidget {
   const DaftarKandidatFlowSheet({super.key});
 
   static Future<void> show(BuildContext context) async {
+    final authBloc = context.read<AuthBloc>();
     final result = await showModalBottomSheet<Map<String, dynamic>>(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (_) => const DaftarKandidatFlowSheet(),
+      builder: (_) => BlocProvider<AuthBloc>.value(
+        value: authBloc,
+        child: const DaftarKandidatFlowSheet(),
+      ),
     );
 
     if (result != null && context.mounted) {
