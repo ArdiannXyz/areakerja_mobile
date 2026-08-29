@@ -1,82 +1,121 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_dimensions.dart';
+import '../../data/models/koin_model.dart';
+import '../bloc/koin_bloc.dart';
+import 'beli_koin_page.dart';
+import 'riwayat_transaksi_koin_page.dart';
 
-/// Halaman Koin / Wallet — Tab Koin
-/// TODO: Implementasi dengan saldo koin, riwayat transaksi, dan paket pembelian
-class KoinPage extends StatelessWidget {
+class KoinPage extends StatefulWidget {
   const KoinPage({super.key});
 
-  // Mock saldo — ganti dengan data dari BLoC/API
-  static const int _mockSaldo = 850;
+  @override
+  State<KoinPage> createState() => _KoinPageState();
+}
+
+class _KoinPageState extends State<KoinPage> {
+  @override
+  void initState() {
+    super.initState();
+    context.read<KoinBloc>().add(const FetchKoinPageDataEvent());
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      body: CustomScrollView(
-        slivers: [
-          // AppBar
-          SliverAppBar(
-            backgroundColor: Colors.white,
-            elevation: 0,
-            pinned: true,
-            title: Text(
-              'Koin & Wallet',
-              style: GoogleFonts.poppins(
-                fontSize: 17,
-                fontWeight: FontWeight.w600,
-                color: AppColors.textPrimary,
+      body: BlocConsumer<KoinBloc, KoinState>(
+        listener: (context, state) {
+          if (state is KoinError) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(state.message),
+                backgroundColor: AppColors.danger,
               ),
-            ),
-            bottom: PreferredSize(
-              preferredSize: const Size.fromHeight(1),
-              child: Divider(height: 1, color: AppColors.border),
-            ),
-          ),
+            );
+          }
+        },
+        builder: (context, state) {
+          int saldo = 0;
+          List<KoinPackageModel> packages = [];
+          bool isLoading = state is KoinLoading || state is KoinInitial;
 
-          SliverPadding(
-            padding: const EdgeInsets.all(AppDimensions.spaceXL),
-            sliver: SliverList(
-              delegate: SliverChildListDelegate([
-                // Coin balance hero card
-                _buildBalanceCard(context),
-                const SizedBox(height: AppDimensions.space2XL),
+          if (state is KoinPageLoaded) {
+            saldo = state.saldoKoin;
+            packages = state.packages;
+          }
 
-                // Paket koin
-                Text(
-                  'Paket Koin',
+          return CustomScrollView(
+            slivers: [
+              // AppBar
+              SliverAppBar(
+                backgroundColor: Colors.white,
+                elevation: 0,
+                pinned: true,
+                title: Text(
+                  'Koin & Wallet',
                   style: GoogleFonts.poppins(
-                    fontSize: 15,
+                    fontSize: 17,
                     fontWeight: FontWeight.w600,
                     color: AppColors.textPrimary,
                   ),
                 ),
-                const SizedBox(height: AppDimensions.spaceM),
-                _buildCoinPackages(context),
-                const SizedBox(height: AppDimensions.space2XL),
+                bottom: PreferredSize(
+                  preferredSize: const Size.fromHeight(1),
+                  child: Divider(height: 1, color: AppColors.border),
+                ),
+              ),
 
-                // Riwayat
-                Text(
-                  'Riwayat Transaksi',
-                  style: GoogleFonts.poppins(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.textPrimary,
+              if (isLoading)
+                const SliverFillRemaining(
+                  child: Center(child: CircularProgressIndicator()),
+                )
+              else
+                SliverPadding(
+                  padding: const EdgeInsets.all(AppDimensions.spaceXL),
+                  sliver: SliverList(
+                    delegate: SliverChildListDelegate([
+                      // Coin balance hero card
+                      _buildBalanceCard(context, saldo),
+                      const SizedBox(height: AppDimensions.space2XL),
+
+                      // Paket koin
+                      Text(
+                        'Paket Koin',
+                        style: GoogleFonts.poppins(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.textPrimary,
+                        ),
+                      ),
+                      const SizedBox(height: AppDimensions.spaceM),
+                      _buildCoinPackages(context, packages),
+                      const SizedBox(height: AppDimensions.space2XL),
+
+                      // Riwayat (Tombol navigasi ke halaman terpisah)
+                      Text(
+                        'Riwayat Transaksi',
+                        style: GoogleFonts.poppins(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.textPrimary,
+                        ),
+                      ),
+                      const SizedBox(height: AppDimensions.spaceM),
+                      _buildHistoryButton(context),
+                    ]),
                   ),
                 ),
-                const SizedBox(height: AppDimensions.spaceM),
-                _buildEmptyHistory(),
-              ]),
-            ),
-          ),
-        ],
+            ],
+          );
+        },
       ),
     );
   }
 
-  Widget _buildBalanceCard(BuildContext context) {
+  Widget _buildBalanceCard(BuildContext context, int saldo) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 22),
@@ -117,7 +156,7 @@ class KoinPage extends StatelessWidget {
               ),
               const SizedBox(width: 10),
               Text(
-                '$_mockSaldo Koin',
+                '$saldo Koin',
                 style: GoogleFonts.poppins(
                   fontSize: 30,
                   fontWeight: FontWeight.w700,
@@ -141,27 +180,26 @@ class KoinPage extends StatelessWidget {
     );
   }
 
-  Widget _buildCoinPackages(BuildContext context) {
-    final packages = [
-      _CoinPackage(
-        koin: 100,
-        harga: 'Rp 50.000',
-        label: 'Starter',
-        isBestValue: false,
-      ),
-      _CoinPackage(
-        koin: 500,
-        harga: 'Rp 200.000',
-        label: 'Populer',
-        isBestValue: true,
-      ),
-      _CoinPackage(
-        koin: 1500,
-        harga: 'Rp 500.000',
-        label: 'Pro',
-        isBestValue: false,
-      ),
-    ];
+  Widget _buildCoinPackages(BuildContext context, List<KoinPackageModel> packages) {
+    if (packages.isEmpty) {
+      return Container(
+        padding: const EdgeInsets.symmetric(vertical: 32),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: AppColors.border),
+        ),
+        child: Center(
+          child: Text(
+            'Paket koin belum tersedia',
+            style: GoogleFonts.inter(
+              fontSize: 13,
+              color: AppColors.textSecondary,
+            ),
+          ),
+        ),
+      );
+    }
 
     return Column(
       children: packages.map((p) {
@@ -173,51 +211,66 @@ class KoinPage extends StatelessWidget {
     );
   }
 
-  Widget _buildEmptyHistory() {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 32),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.border),
-      ),
-      child: Column(
-        children: [
-          const Icon(
-            Icons.receipt_long_outlined,
-            size: 40,
-            color: AppColors.textMuted,
-          ),
-          const SizedBox(height: 12),
-          Text(
-            'Belum ada riwayat transaksi',
-            style: GoogleFonts.inter(
-              fontSize: 13,
-              color: AppColors.textSecondary,
+  Widget _buildHistoryButton(BuildContext context) {
+    return InkWell(
+      onTap: () {
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (_) => BlocProvider.value(
+              value: context.read<KoinBloc>(),
+              child: const RiwayatTransaksiKoinPage(),
             ),
           ),
-        ],
+        );
+      },
+      borderRadius: BorderRadius.circular(14),
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: AppColors.border),
+        ),
+        child: Row(
+          children: [
+            const Icon(
+              Icons.receipt_long_outlined,
+              size: 28,
+              color: AppColors.primary,
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Lihat Semua Riwayat',
+                    style: GoogleFonts.poppins(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.textPrimary,
+                    ),
+                  ),
+                  Text(
+                    'Riwayat pembelian dan penggunaan koin',
+                    style: GoogleFonts.inter(
+                      fontSize: 12,
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const Icon(Icons.chevron_right, color: AppColors.textMuted),
+          ],
+        ),
       ),
     );
   }
 }
 
-class _CoinPackage {
-  final int koin;
-  final String harga;
-  final String label;
-  final bool isBestValue;
-
-  const _CoinPackage({
-    required this.koin,
-    required this.harga,
-    required this.label,
-    required this.isBestValue,
-  });
-}
-
 class _CoinPackageCard extends StatelessWidget {
-  final _CoinPackage package;
+  final KoinPackageModel package;
 
   const _CoinPackageCard({required this.package});
 
@@ -229,8 +282,8 @@ class _CoinPackageCard extends StatelessWidget {
         color: Colors.white,
         borderRadius: BorderRadius.circular(14),
         border: Border.all(
-          color: package.isBestValue ? AppColors.primary : AppColors.border,
-          width: package.isBestValue ? 1.5 : 1,
+          color: package.isPopular ? AppColors.primary : AppColors.border,
+          width: package.isPopular ? 1.5 : 1,
         ),
         boxShadow: const [
           BoxShadow(
@@ -246,14 +299,14 @@ class _CoinPackageCard extends StatelessWidget {
             width: 44,
             height: 44,
             decoration: BoxDecoration(
-              color: package.isBestValue
+              color: package.isPopular
                   ? AppColors.primarySurface
                   : AppColors.secondarySurface,
               borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(
               Icons.monetization_on_rounded,
-              color: package.isBestValue ? AppColors.primary : AppColors.textSecondary,
+              color: package.isPopular ? AppColors.primary : AppColors.textSecondary,
               size: 24,
             ),
           ),
@@ -265,14 +318,14 @@ class _CoinPackageCard extends StatelessWidget {
                 Row(
                   children: [
                     Text(
-                      '${package.koin} Koin',
+                      '${package.jumlahKoin} Koin',
                       style: GoogleFonts.poppins(
                         fontSize: 15,
                         fontWeight: FontWeight.w600,
                         color: AppColors.textPrimary,
                       ),
                     ),
-                    if (package.isBestValue) ...[
+                    if (package.isPopular) ...[
                       const SizedBox(width: 8),
                       Container(
                         padding: const EdgeInsets.symmetric(
@@ -296,7 +349,7 @@ class _CoinPackageCard extends StatelessWidget {
                   ],
                 ),
                 Text(
-                  package.label,
+                  package.deskripsi ?? package.nama,
                   style: GoogleFonts.inter(
                     fontSize: 12,
                     color: AppColors.textSecondary,
@@ -309,23 +362,32 @@ class _CoinPackageCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text(
-                package.harga,
+                package.hargaFormatted,
                 style: GoogleFonts.poppins(
                   fontSize: 14,
                   fontWeight: FontWeight.w700,
-                  color: package.isBestValue ? AppColors.primary : AppColors.textPrimary,
+                  color: package.isPopular ? AppColors.primary : AppColors.textPrimary,
                 ),
               ),
               const SizedBox(height: 6),
               ElevatedButton(
                 onPressed: () {
-                  // TODO: Trigger pembelian koin
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => MultiBlocProvider(
+                        providers: [
+                          BlocProvider.value(value: context.read<KoinBloc>()),
+                        ],
+                        child: BeliKoinPage(package: package),
+                      ),
+                    ),
+                  );
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: package.isBestValue
+                  backgroundColor: package.isPopular
                       ? AppColors.primary
                       : AppColors.secondarySurface,
-                  foregroundColor: package.isBestValue
+                  foregroundColor: package.isPopular
                       ? Colors.white
                       : AppColors.textPrimary,
                   elevation: 0,
@@ -350,3 +412,4 @@ class _CoinPackageCard extends StatelessWidget {
     );
   }
 }
+

@@ -3,6 +3,8 @@ enum UserRole {
   kandidat,
   perusahaan,
   admin,
+  superAdmin,
+  finance,
   unknown;
 
   static UserRole fromString(String? role) {
@@ -21,6 +23,13 @@ enum UserRole {
       case 'admin':
       case 'administrator':
         return UserRole.admin;
+      case 'super_admin':
+      case 'superadmin':
+      case 'super admin':
+        return UserRole.superAdmin;
+      case 'finance':
+      case 'keuangan':
+        return UserRole.finance;
       default:
         return UserRole.unknown;
     }
@@ -36,6 +45,10 @@ enum UserRole {
         return 'perusahaan';
       case UserRole.admin:
         return 'admin';
+      case UserRole.superAdmin:
+        return 'super_admin';
+      case UserRole.finance:
+        return 'finance';
       case UserRole.unknown:
         return 'pelamar';
     }
@@ -51,9 +64,25 @@ enum UserRole {
         return 'Perusahaan';
       case UserRole.admin:
         return 'Administrator';
+      case UserRole.superAdmin:
+        return 'Super Admin';
+      case UserRole.finance:
+        return 'Finance';
       case UserRole.unknown:
         return 'Pengguna';
     }
+  }
+
+  /// Role yang hanya dapat menggunakan AreaKerja Web (bukan Mobile)
+  bool get isWebOnlyRole {
+    return this == UserRole.superAdmin || this == UserRole.finance;
+  }
+
+  /// Role yang dapat menggunakan AreaKerja Mobile
+  bool get isMobileRole {
+    return this == UserRole.pelamar ||
+        this == UserRole.kandidat ||
+        this == UserRole.perusahaan;
   }
 }
 
@@ -64,4 +93,6 @@ class RoleConstants {
   static const String kandidat = 'kandidat';
   static const String perusahaan = 'perusahaan';
   static const String admin = 'admin';
+  static const String superAdmin = 'super_admin';
+  static const String finance = 'finance';
 }

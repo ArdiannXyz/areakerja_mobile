@@ -83,6 +83,12 @@ class ApiEndpoints {
   static const String upgradeKandidat = '/pelamar/upgrade-kandidat';
   static const String pelamarSkills = '/pelamar/skills';
 
+  // --- Kandidat Program & Status ---
+  // TODO: Konfirmasi endpoint ini dengan backend
+  static const String kandidatStatus = '/pelamar/kandidat-status';
+  static const String divisiList = '/pelamar/divisi';
+  static String uploadBuktiBayar(String id) => '/payments/$id/upload-bukti';
+
   // --- Pelamar Experience (Pengalaman Kerja) ---
   static const String pelamarExperiences = '/pelamar/experiences';
   static String pelamarExperienceDetail(String id) => '/pelamar/experiences/$id';
@@ -119,11 +125,18 @@ class ApiEndpoints {
   static const String companyJobs = '/company/jobs';
   static const String companyStoreJob = '/company/jobs';
   static String companyJobDetail(String id) => '/company/jobs/$id';
+  static String companyUpdateJob(String id) => '/company/jobs/$id';
   static String companyToggleJobStatus(String id) => '/company/jobs/$id/toggle-status';
+  static String companyDeleteJob(String id) => '/company/jobs/$id';
 
   // Applicants & Status
   static String companyJobApplicants(String id) => '/company/jobs/$id/applicants';
   static String companyUpdateApplicantStatus(String id) => '/company/applications/$id/status';
+
+  // Koin Balance & History
+  // TODO: Konfirmasi endpoint koin balance dengan backend (mungkin ada di /company/profile atau /company/dashboard)
+  static const String companyKoinBalance = '/company/koin-balance';
+  static const String companyKoinHistory = '/company/koin-history';
 
   // Talent Hunter
   static const String companyTalents = '/company/talents';
@@ -134,4 +147,5 @@ class ApiEndpoints {
   static const String paymentsCheckout = '/payments/checkout';
   static const String paymentsHistory = '/payments/history';
   static String paymentDetail(String id) => '/payments/$id';
+  static String paymentReuploadBukti(String id) => '/payments/$id/upload-bukti';
 }

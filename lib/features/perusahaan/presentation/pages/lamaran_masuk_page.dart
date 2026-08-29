@@ -1,54 +1,153 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_dimensions.dart';
+import '../../../lowongan/data/models/lowongan_model.dart';
+import '../bloc/perusahaan_bloc.dart';
+import 'detail_lowongan_perusahaan_page.dart';
 
 /// Halaman Lamaran Masuk — Tab Pelamar
-/// TODO: Implementasi penuh dengan daftar pelamar, filter status, dan aksi rekrutmen
-class LamaranMasukPage extends StatelessWidget {
+/// Menampilkan daftar lowongan yang memiliki pelamar
+class LamaranMasukPage extends StatefulWidget {
   const LamaranMasukPage({super.key});
+
+  @override
+  State<LamaranMasukPage> createState() => _LamaranMasukPageState();
+}
+
+class _LamaranMasukPageState extends State<LamaranMasukPage> {
+  @override
+  void initState() {
+    super.initState();
+    context.read<PerusahaanBloc>().add(const FetchMyJobsEvent());
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      body: CustomScrollView(
-        slivers: [
-          // AppBar
-          SliverAppBar(
-            backgroundColor: Colors.white,
-            elevation: 0,
-            floating: true,
-            snap: true,
-            title: Text(
-              'Lamaran Masuk',
-              style: GoogleFonts.poppins(
-                fontSize: 17,
-                fontWeight: FontWeight.w600,
-                color: AppColors.textPrimary,
-              ),
-            ),
-            actions: [
-              IconButton(
-                icon: const Icon(
-                  Icons.filter_list_rounded,
-                  color: AppColors.textPrimary,
+      body: BlocBuilder<PerusahaanBloc, PerusahaanState>(
+        builder: (context, state) {
+          return CustomScrollView(
+            slivers: [
+              // AppBar
+              SliverAppBar(
+                backgroundColor: Colors.white,
+                elevation: 0,
+                floating: true,
+                snap: true,
+                title: Text(
+                  'Pilih Lowongan',
+                  style: GoogleFonts.poppins(
+                    fontSize: 17,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.textPrimary,
+                  ),
                 ),
-                onPressed: () {
-                  // TODO: Show filter bottom sheet
-                },
+                bottom: PreferredSize(
+                  preferredSize: const Size.fromHeight(1),
+                  child: Divider(height: 1, color: AppColors.border),
+                ),
               ),
-            ],
-            bottom: PreferredSize(
-              preferredSize: const Size.fromHeight(1),
-              child: Divider(height: 1, color: AppColors.border),
-            ),
-          ),
 
-          SliverFillRemaining(
-            child: _buildEmptyState(context),
-          ),
-        ],
+              if (state is PerusahaanLoading)
+                const SliverFillRemaining(
+                  child: Center(child: CircularProgressIndicator()),
+                )
+              else if (state is MyJobsLoaded)
+                _buildJobsList(context, state.jobs)
+              else if (state is PerusahaanError)
+                SliverFillRemaining(
+                  child: Center(child: Text(state.message)),
+                )
+              else
+                const SliverFillRemaining(
+                  child: Center(child: CircularProgressIndicator()),
+                ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildJobsList(BuildContext context, List<LowonganModel> jobs) {
+    if (jobs.isEmpty) {
+      return SliverFillRemaining(
+        child: _buildEmptyState(context),
+      );
+    }
+
+    return SliverPadding(
+      padding: const EdgeInsets.all(AppDimensions.spaceXL),
+      sliver: SliverList(
+        delegate: SliverChildBuilderDelegate(
+          (context, index) {
+            final job = jobs[index];
+            return GestureDetector(
+              onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => BlocProvider.value(
+                      value: context.read<PerusahaanBloc>(),
+                      child: DetailLowonganPerusahaanPage(job: job),
+                    ),
+                  ),
+                );
+              },
+              child: Container(
+                margin: const EdgeInsets.only(bottom: 12),
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: AppColors.border),
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: const BoxDecoration(
+                        color: AppColors.primarySurface,
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.work_outline,
+                        color: AppColors.primary,
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            job.judul,
+                            style: GoogleFonts.poppins(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            '${job.jumlahPelamar} Pelamar Masuk',
+                            style: GoogleFonts.inter(
+                              fontSize: 13,
+                              color: AppColors.textSecondary,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const Icon(Icons.chevron_right, color: AppColors.textMuted),
+                  ],
+                ),
+              ),
+            );
+          },
+          childCount: jobs.length,
+        ),
       ),
     );
   }
@@ -63,7 +162,7 @@ class LamaranMasukPage extends StatelessWidget {
             Container(
               width: 90,
               height: 90,
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 color: AppColors.accentLight,
                 shape: BoxShape.circle,
               ),
@@ -84,7 +183,7 @@ class LamaranMasukPage extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              'Lamaran dari kandidat akan muncul di sini. Buat lowongan untuk mulai menerima pelamar.',
+              'Buat lowongan pekerjaan terlebih dahulu untuk mulai menerima pelamar.',
               style: GoogleFonts.inter(
                 fontSize: 13,
                 color: AppColors.textSecondary,

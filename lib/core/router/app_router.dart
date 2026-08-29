@@ -4,7 +4,14 @@ import '../../features/auth/presentation/pages/login_page.dart';
 import '../../features/auth/presentation/pages/otp_verify_page.dart';
 import '../../features/auth/presentation/pages/register_page.dart';
 import '../../features/auth/presentation/pages/reset_password_page.dart';
+import '../../features/kandidat/presentation/pages/benefit_kandidat_page.dart';
 import '../../features/kandidat/presentation/pages/dashboard_kandidat_page.dart';
+import '../../features/kandidat/presentation/pages/pilih_divisi_page.dart';
+import '../../features/kandidat/presentation/pages/lengkapi_data_kandidat_page.dart';
+import '../../features/kandidat/presentation/pages/pilih_metode_pembayaran_page.dart';
+import '../../features/kandidat/presentation/pages/konfirmasi_transaksi_page.dart';
+import '../../features/kandidat/data/models/divisi_model.dart';
+import '../../features/pembayaran/data/models/pembayaran_model.dart';
 import '../../features/lowongan/data/models/lowongan_model.dart';
 import '../../features/lowongan/presentation/pages/daftar_lowongan_page.dart';
 import '../../features/lowongan/presentation/pages/detail_lowongan_page.dart';
@@ -54,6 +61,13 @@ class AppRouter {
   static const String perusahaanKoin = '/perusahaan/koin';
   static const String perusahaanProfil = '/perusahaan/profil';
   static const String resetPassword = '/reset-password';
+
+  // Kandidat / Pelamar Registration Flow
+  static const String kandidatBenefit = '/kandidat/benefit';
+  static const String kandidatPilihDivisi = '/kandidat/pilih-divisi';
+  static const String kandidatLengkapiData = '/kandidat/lengkapi-data';
+  static const String kandidatPilihPembayaran = '/kandidat/pilih-pembayaran';
+  static const String kandidatKonfirmasiTransaksi = '/kandidat/konfirmasi-transaksi';
 
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
     switch (settings.name) {
@@ -222,6 +236,46 @@ class AppRouter {
       case perusahaanProfil:
         return MaterialPageRoute(
           builder: (_) => const ProfilPerusahaanPage(),
+          settings: settings,
+        );
+
+      case kandidatBenefit:
+        return MaterialPageRoute(
+          builder: (_) => const BenefitKandidatPage(),
+          settings: settings,
+        );
+
+      case kandidatPilihDivisi:
+        return MaterialPageRoute(
+          builder: (_) => const PilihDivisiPage(),
+          settings: settings,
+        );
+
+      case kandidatLengkapiData:
+        final args = settings.arguments as Map<String, dynamic>?;
+        final divisi = args?['divisi'] as DivisiModel;
+        return MaterialPageRoute(
+          builder: (_) => LengkapiDataKandidatPage(divisi: divisi),
+          settings: settings,
+        );
+
+      case kandidatPilihPembayaran:
+        final args = settings.arguments as Map<String, dynamic>?;
+        final divisi = args?['divisi'] as DivisiModel;
+        return MaterialPageRoute(
+          builder: (_) => PilihMetodePembayaranPage(divisi: divisi),
+          settings: settings,
+        );
+
+      case kandidatKonfirmasiTransaksi:
+        final args = settings.arguments as Map<String, dynamic>?;
+        final divisi = args?['divisi'] as DivisiModel;
+        final paymentMethod = args?['payment_method'] as MetodePembayaranModel;
+        return MaterialPageRoute(
+          builder: (_) => KonfirmasiTransaksiPage(
+            divisi: divisi,
+            paymentMethod: paymentMethod,
+          ),
           settings: settings,
         );
 

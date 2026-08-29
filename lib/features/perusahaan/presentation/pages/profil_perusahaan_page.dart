@@ -6,11 +6,22 @@ import '../../../../core/constants/app_dimensions.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
 import '../../../auth/presentation/bloc/auth_event.dart';
 import '../../../auth/presentation/bloc/auth_state.dart';
+import '../bloc/perusahaan_bloc.dart';
+import 'edit_profil_perusahaan_page.dart';
 
-/// Halaman Profil Perusahaan — Tab Profil
-/// TODO: Implementasi penuh dengan edit profil, pengaturan akun, dsb.
-class ProfilPerusahaanPage extends StatelessWidget {
+class ProfilPerusahaanPage extends StatefulWidget {
   const ProfilPerusahaanPage({super.key});
+
+  @override
+  State<ProfilPerusahaanPage> createState() => _ProfilPerusahaanPageState();
+}
+
+class _ProfilPerusahaanPageState extends State<ProfilPerusahaanPage> {
+  @override
+  void initState() {
+    super.initState();
+    context.read<PerusahaanBloc>().add(const FetchProfileEvent());
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,8 +40,20 @@ class ProfilPerusahaanPage extends StatelessWidget {
             user?.companyName ?? user?.name ?? 'Perusahaan Mitra';
         final email = user?.email ?? '-';
 
-        return Scaffold(
-          backgroundColor: AppColors.background,
+        return BlocConsumer<PerusahaanBloc, PerusahaanState>(
+          listener: (context, perusahaanState) {
+            if (perusahaanState is PerusahaanError) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(perusahaanState.message),
+                  backgroundColor: AppColors.danger,
+                ),
+              );
+            }
+          },
+          builder: (context, perusahaanState) {
+            return Scaffold(
+              backgroundColor: AppColors.background,
           body: CustomScrollView(
             slivers: [
               SliverAppBar(
@@ -59,18 +82,20 @@ class ProfilPerusahaanPage extends StatelessWidget {
                     _buildProfileCard(companyName, email),
                     const SizedBox(height: AppDimensions.space2XL),
 
-                    // Menu Items
-                    _buildMenuSection(context),
-                    const SizedBox(height: AppDimensions.space2XL),
+                        // Menu Items
+                        _buildMenuSection(context, perusahaanState),
+                        const SizedBox(height: AppDimensions.space2XL),
 
-                    // Logout
-                    _buildLogoutButton(context),
-                    const SizedBox(height: AppDimensions.spaceXL),
-                  ]),
-                ),
+                        // Logout
+                        _buildLogoutButton(context),
+                        const SizedBox(height: AppDimensions.spaceXL),
+                      ]),
+                    ),
+                  ),
+                ],
               ),
-            ],
-          ),
+            );
+          },
         );
       },
     );
@@ -159,13 +184,22 @@ class ProfilPerusahaanPage extends StatelessWidget {
     );
   }
 
-  Widget _buildMenuSection(BuildContext context) {
+  Widget _buildMenuSection(BuildContext context, PerusahaanState state) {
     final menuItems = [
       _MenuItem(
         icon: Icons.business_outlined,
         label: 'Data Perusahaan',
         onTap: () {
-          // TODO: Navigate to edit profil perusahaan
+          if (state is ProfileLoaded) {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => BlocProvider.value(
+                  value: context.read<PerusahaanBloc>(),
+                  child: EditProfilPerusahaanPage(profile: state.profile),
+                ),
+              ),
+            );
+          }
         },
       ),
       _MenuItem(

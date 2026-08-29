@@ -381,7 +381,7 @@ class _ProfilPelamarPageState extends State<ProfilPelamarPage> {
 
                 // Explanation text
                 const Text(
-                  'Anda harus menyelesaikan pelatihan agar bisa mengakses halaman ini',
+                  'Anda harus menyelesaikan proses pendaftaran dan pelatihan terlebih dahulu untuk mendapatkan status Kandidat Siap Kerja.',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 14.5,
@@ -415,14 +415,7 @@ class _ProfilPelamarPageState extends State<ProfilPelamarPage> {
                     ),
                     onPressed: () {
                       Navigator.of(ctx).pop();
-                      if (widget.onNavigateToKandidatTab != null) {
-                        widget.onNavigateToKandidatTab!();
-                      } else {
-                        Navigator.of(context).pushNamedAndRemoveUntil(
-                          '/dashboard-pelamar',
-                          (route) => false,
-                        );
-                      }
+                      Navigator.of(context).pushNamed('/kandidat/benefit');
                     },
                   ),
                 ),

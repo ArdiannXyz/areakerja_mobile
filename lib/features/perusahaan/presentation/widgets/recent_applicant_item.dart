@@ -183,7 +183,7 @@ class _ApplicantAvatar extends StatelessWidget {
               child: Image.network(
                 avatarUrl!,
                 fit: BoxFit.cover,
-                errorBuilder: (_, __, _x) => _InitialText(
+                errorBuilder: (context, error, stackTrace) => _InitialText(
                   inisial: inisial,
                   color: color,
                 ),
