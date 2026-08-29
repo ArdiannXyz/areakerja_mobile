@@ -86,19 +86,8 @@ class _RegisterPageState extends State<RegisterPage> {
               userName: state.user.name,
               userRole: state.user.role.value,
               onContinue: () {
-                // Role-based Navigation setelah dialog ditutup
-                switch (state.user.role) {
-                  case UserRole.perusahaan:
-                    Navigator.of(context).pushNamedAndRemoveUntil('/dashboard-perusahaan', (route) => false);
-                    break;
-                  case UserRole.kandidat:
-                    Navigator.of(context).pushNamedAndRemoveUntil('/dashboard-kandidat', (route) => false);
-                    break;
-                  case UserRole.pelamar:
-                  default:
-                    Navigator.of(context).pushNamedAndRemoveUntil('/dashboard-pelamar', (route) => false);
-                    break;
-                }
+                // Arahkan ke halaman login setelah registrasi berhasil
+                Navigator.of(context).pushNamedAndRemoveUntil('/login', (route) => false);
               },
             );
           } else if (state is AuthFailureState) {

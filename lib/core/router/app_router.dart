@@ -18,6 +18,10 @@ import '../../features/pelamar/presentation/pages/profil_pelamar_page.dart';
 import '../../features/pelamar/presentation/pages/ubah_kata_sandi_page.dart';
 import '../../features/pembayaran/presentation/pages/detail_transaksi_page.dart';
 import '../../features/perusahaan/presentation/pages/dashboard_perusahaan_page.dart';
+import '../../features/perusahaan/presentation/pages/kelola_lowongan_page.dart';
+import '../../features/perusahaan/presentation/pages/lamaran_masuk_page.dart';
+import '../../features/perusahaan/presentation/pages/koin_page.dart';
+import '../../features/perusahaan/presentation/pages/profil_perusahaan_page.dart';
 
 import '../../features/splash/presentation/pages/splash_screen_page.dart';
 
@@ -43,6 +47,12 @@ class AppRouter {
   static const String faq = '/faq';
   static const String ubahKataSandi = '/pelamar/ubah-kata-sandi';
   static const String detailTransaksi = '/transaksi/detail';
+
+  // Perusahaan routes
+  static const String perusahaanKelolaLowongan = '/perusahaan/lowongan';
+  static const String perusahaanLamaranMasuk = '/perusahaan/pelamar';
+  static const String perusahaanKoin = '/perusahaan/koin';
+  static const String perusahaanProfil = '/perusahaan/profil';
   static const String resetPassword = '/reset-password';
 
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
@@ -188,6 +198,30 @@ class AppRouter {
             bankName: args?['bankName']?.toString(),
             totalPayment: args?['totalPayment']?.toString(),
           ),
+          settings: settings,
+        );
+
+      case perusahaanKelolaLowongan:
+        return MaterialPageRoute(
+          builder: (_) => const KelolaLowonganPage(),
+          settings: settings,
+        );
+
+      case perusahaanLamaranMasuk:
+        return MaterialPageRoute(
+          builder: (_) => const LamaranMasukPage(),
+          settings: settings,
+        );
+
+      case perusahaanKoin:
+        return MaterialPageRoute(
+          builder: (_) => const KoinPage(),
+          settings: settings,
+        );
+
+      case perusahaanProfil:
+        return MaterialPageRoute(
+          builder: (_) => const ProfilPerusahaanPage(),
           settings: settings,
         );
 

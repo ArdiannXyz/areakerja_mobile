@@ -1,233 +1,147 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/constants/app_colors.dart';
-import '../../../../core/constants/app_dimensions.dart';
-import '../../../../core/constants/app_text_styles.dart';
-import '../../../../core/constants/role_constants.dart';
-import '../../../../shared/widgets/primary_button.dart';
-import '../../../../shared/widgets/status_chip.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
-import '../../../auth/presentation/bloc/auth_event.dart';
 import '../../../auth/presentation/bloc/auth_state.dart';
+import '../pages/kelola_lowongan_page.dart';
+import '../pages/koin_page.dart';
+import '../pages/lamaran_masuk_page.dart';
+import '../pages/profil_perusahaan_page.dart';
+import '../widgets/company_home_tab.dart';
 
-class DashboardPerusahaanPage extends StatelessWidget {
+class DashboardPerusahaanPage extends StatefulWidget {
   const DashboardPerusahaanPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return BlocConsumer<AuthBloc, AuthState>(
-      listener: (context, state) {
-        if (state is Unauthenticated) {
-          Navigator.of(context).pushNamedAndRemoveUntil('/login', (route) => false);
-        }
-      },
-      builder: (context, state) {
-        final user = state is Authenticated ? state.user : null;
+  State<DashboardPerusahaanPage> createState() =>
+      _DashboardPerusahaanPageState();
+}
 
-        return Scaffold(
-          backgroundColor: AppColors.background,
-          appBar: AppBar(
-            backgroundColor: Colors.white,
-            elevation: 0,
-            title: Text(
-              'Panel Perusahaan',
-              style: AppTextStyles.heading3,
-            ),
-            actions: [
-              IconButton(
-                icon: const Icon(Icons.logout_rounded, color: AppColors.danger),
-                tooltip: 'Keluar',
-                onPressed: () => _showLogoutDialog(context),
-              ),
-            ],
-          ),
-          body: SafeArea(
-            child: SingleChildScrollView(
-              padding: AppDimensions.screenPadding,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Company Profile Welcome Card
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        colors: [Color(0xFF0F172A), Color(0xFF1E293B)],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                      borderRadius: AppDimensions.borderRadiusXL,
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Container(
-                              width: 56,
-                              height: 56,
-                              decoration: BoxDecoration(
-                                color: AppColors.primary,
-                                borderRadius: BorderRadius.circular(16),
-                              ),
-                              child: const Icon(
-                                Icons.apartment_rounded,
-                                color: Colors.white,
-                                size: 30,
-                              ),
-                            ),
-                            const SizedBox(width: AppDimensions.spaceL),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    user?.companyName ?? user?.name ?? 'Perusahaan Mitra',
-                                    style: AppTextStyles.heading3.copyWith(color: Colors.white),
-                                  ),
-                                  const SizedBox(height: 2),
-                                  Text(
-                                    user?.email ?? '-',
-                                    style: AppTextStyles.bodySmall.copyWith(color: Colors.white70),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: AppDimensions.spaceL),
-                        const RoleChip(role: UserRole.perusahaan),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: AppDimensions.space2XL),
+class _DashboardPerusahaanPageState extends State<DashboardPerusahaanPage> {
+  int _currentIndex = 0;
 
-                  // Quick Stats
-                  Text('Ringkasan Rekrutmen', style: AppTextStyles.heading3),
-                  const SizedBox(height: AppDimensions.spaceM),
-                  Row(
-                    children: [
-                      _StatCard(title: 'Lowongan Aktif', count: '12', color: AppColors.primary),
-                      const SizedBox(width: 12),
-                      _StatCard(title: 'Pelamar Masuk', count: '48', color: AppColors.accent),
-                    ],
-                  ),
-                  const SizedBox(height: AppDimensions.space2XL),
-
-                  // Logout Button
-                  PrimaryButton(
-                    text: 'Keluar dari Akun',
-                    backgroundColor: AppColors.danger,
-                    icon: const Icon(Icons.logout_rounded, color: Colors.white, size: 18),
-                    onPressed: () => _showLogoutDialog(context),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        );
-      },
-    );
+  /// Navigasi ke tab tertentu (dipanggil dari child widget)
+  void _navigateToTab(int index) {
+    if (index >= 0 && index < 5) {
+      setState(() => _currentIndex = index);
+    }
   }
 
-  void _showLogoutDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (ctx) => Dialog(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
+  @override
+  Widget build(BuildContext context) {
+    return BlocListener<AuthBloc, AuthState>(
+      listener: (context, state) {
+        if (state is Unauthenticated) {
+          Navigator.of(context).pushNamedAndRemoveUntil(
+            '/login',
+            (route) => false,
+          );
+        }
+      },
+      child: AnnotatedRegion<SystemUiOverlayStyle>(
+        value: SystemUiOverlayStyle.dark.copyWith(
+          statusBarColor: Colors.transparent,
+          statusBarIconBrightness: Brightness.dark,
         ),
-        insetPadding: const EdgeInsets.symmetric(horizontal: 44),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 22),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
+        child: Scaffold(
+          backgroundColor: AppColors.background,
+          // IndexedStack mempertahankan state tiap tab
+          body: IndexedStack(
+            index: _currentIndex,
             children: [
-              // Red Logout Icon (Left pointing arrow)
-              Transform.flip(
-                flipX: true,
-                child: const Icon(
-                  Icons.logout_rounded,
-                  size: 50,
-                  color: Color(0xFFFF0000),
-                ),
+              // Tab 0: Home
+              CompanyHomeTab(onNavigateTab: _navigateToTab),
+
+              // Tab 1: Lowongan
+              const KelolaLowonganPage(),
+
+              // Tab 2: Pelamar
+              const LamaranMasukPage(),
+
+              // Tab 3: Koin
+              const KoinPage(),
+
+              // Tab 4: Profil
+              const ProfilPerusahaanPage(),
+            ],
+          ),
+          bottomNavigationBar: _CompanyBottomNav(
+            currentIndex: _currentIndex,
+            onTap: (index) => setState(() => _currentIndex = index),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ─── Bottom Navigation Bar ────────────────────────────────────────────────────
+
+class _CompanyBottomNav extends StatelessWidget {
+  final int currentIndex;
+  final ValueChanged<int> onTap;
+
+  const _CompanyBottomNav({
+    required this.currentIndex,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        border: Border(top: BorderSide(color: AppColors.border, width: 1)),
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x0A0F172A),
+            blurRadius: 16,
+            offset: Offset(0, -4),
+          ),
+        ],
+      ),
+      child: SafeArea(
+        top: false,
+        child: SizedBox(
+          height: 60,
+          child: Row(
+            children: [
+              _NavItem(
+                icon: Icons.home_outlined,
+                iconActive: Icons.home_rounded,
+                label: 'Home',
+                isActive: currentIndex == 0,
+                onTap: () => onTap(0),
               ),
-              const SizedBox(height: 16),
-
-              // Confirmation Text
-              const Text(
-                'Apakah Anda yakin ingin keluar dari\nAreaKerja.com?',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: Color(0xFF1E293B),
-                  height: 1.4,
-                ),
+              _NavItem(
+                icon: Icons.work_outline_rounded,
+                iconActive: Icons.work_rounded,
+                label: 'Lowongan',
+                isActive: currentIndex == 1,
+                onTap: () => onTap(1),
               ),
-              const SizedBox(height: 20),
-
-              // Action Buttons Row (Ya - Green, Tidak - Red)
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  // Button "Ya"
-                  SizedBox(
-                    width: 88,
-                    height: 38,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF00C05B),
-                        foregroundColor: Colors.white,
-                        elevation: 0,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        padding: EdgeInsets.zero,
-                      ),
-                      onPressed: () {
-                        Navigator.of(ctx).pop();
-                        context.read<AuthBloc>().add(const AuthLogoutRequested());
-                      },
-                      child: const Text(
-                        'Ya',
-                        style: TextStyle(
-                          fontSize: 13.5,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 14),
-
-                  // Button "Tidak"
-                  SizedBox(
-                    width: 88,
-                    height: 38,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFFFF0000),
-                        foregroundColor: Colors.white,
-                        elevation: 0,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        padding: EdgeInsets.zero,
-                      ),
-                      onPressed: () => Navigator.of(ctx).pop(),
-                      child: const Text(
-                        'Tidak',
-                        style: TextStyle(
-                          fontSize: 13.5,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
+              _NavItem(
+                icon: Icons.people_outline_rounded,
+                iconActive: Icons.people_rounded,
+                label: 'Pelamar',
+                isActive: currentIndex == 2,
+                onTap: () => onTap(2),
+              ),
+              _NavItem(
+                icon: Icons.monetization_on_outlined,
+                iconActive: Icons.monetization_on_rounded,
+                label: 'Koin',
+                isActive: currentIndex == 3,
+                onTap: () => onTap(3),
+              ),
+              _NavItem(
+                icon: Icons.person_outline_rounded,
+                iconActive: Icons.person_rounded,
+                label: 'Profil',
+                isActive: currentIndex == 4,
+                onTap: () => onTap(4),
               ),
             ],
           ),
@@ -237,37 +151,56 @@ class DashboardPerusahaanPage extends StatelessWidget {
   }
 }
 
-class _StatCard extends StatelessWidget {
-  final String title;
-  final String count;
-  final Color color;
+class _NavItem extends StatelessWidget {
+  final IconData icon;
+  final IconData iconActive;
+  final String label;
+  final bool isActive;
+  final VoidCallback onTap;
 
-  const _StatCard({
-    required this.title,
-    required this.count,
-    required this.color,
+  const _NavItem({
+    required this.icon,
+    required this.iconActive,
+    required this.label,
+    required this.isActive,
+    required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
     return Expanded(
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: AppColors.border),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(title, style: AppTextStyles.bodySmall),
-            const SizedBox(height: 6),
-            Text(
-              count,
-              style: AppTextStyles.heading2.copyWith(color: color),
-            ),
-          ],
+      child: InkWell(
+        onTap: onTap,
+        splashColor: AppColors.primarySurface,
+        highlightColor: Colors.transparent,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          curve: Curves.easeInOut,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              AnimatedSwitcher(
+                duration: const Duration(milliseconds: 200),
+                transitionBuilder: (child, anim) =>
+                    ScaleTransition(scale: anim, child: child),
+                child: Icon(
+                  isActive ? iconActive : icon,
+                  key: ValueKey(isActive),
+                  color: isActive ? AppColors.primary : AppColors.textMuted,
+                  size: 24,
+                ),
+              ),
+              const SizedBox(height: 3),
+              Text(
+                label,
+                style: GoogleFonts.poppins(
+                  fontSize: 10,
+                  fontWeight: isActive ? FontWeight.w600 : FontWeight.w400,
+                  color: isActive ? AppColors.primary : AppColors.textMuted,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
