@@ -147,83 +147,134 @@ class _CompanyHomeTabState extends State<CompanyHomeTab> {
     );
   }
 
+  String _getGreeting() {
+    final hour = DateTime.now().hour;
+    if (hour >= 4 && hour < 11) return 'Selamat Pagi,';
+    if (hour >= 11 && hour < 15) return 'Selamat Siang,';
+    if (hour >= 15 && hour < 18) return 'Selamat Sore,';
+    return 'Selamat Malam,';
+  }
+
   Widget _buildHeader(BuildContext context, String companyName) {
     return Container(
-      color: Colors.white,
-      padding: const EdgeInsets.fromLTRB(
-        AppDimensions.spaceXL,
-        AppDimensions.spaceL,
-        AppDimensions.spaceXL,
-        AppDimensions.spaceL,
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
+      color: const Color(0xFFFF5E14),
+      child: Stack(
+        clipBehavior: Clip.none,
         children: [
-          // Company avatar
-          Container(
-            width: 52,
-            height: 52,
-            decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                colors: [Color(0xFFFF6B00), Color(0xFFFF9140)],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-              borderRadius: BorderRadius.circular(14),
-              boxShadow: [
-                BoxShadow(
-                  color: AppColors.primary.withValues(alpha: 0.25),
-                  blurRadius: 8,
-                  offset: const Offset(0, 3),
+          // Background decorative circles
+          Positioned(
+            top: -30,
+            right: -20,
+            child: IgnorePointer(
+              child: Container(
+                width: 140,
+                height: 140,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.white.withValues(alpha: 0.08),
                 ),
-              ],
-            ),
-            child: const Icon(
-              Icons.apartment_rounded,
-              color: Colors.white,
-              size: 26,
+              ),
             ),
           ),
-          const SizedBox(width: 12),
-
-          // Greeting text
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+          Positioned(
+            top: 30,
+            left: -40,
+            child: IgnorePointer(
+              child: Container(
+                width: 160,
+                height: 160,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.white.withValues(alpha: 0.07),
+                ),
+              ),
+            ),
+          ),
+          
+          // Main Content
+          Padding(
+            padding: EdgeInsets.only(
+              top: MediaQuery.of(context).padding.top + 16,
+              left: 20,
+              right: 20,
+              bottom: 24,
+            ),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                RichText(
-                  text: TextSpan(
-                    style: GoogleFonts.poppins(
-                      fontSize: 15,
-                      color: AppColors.textPrimary,
-                      height: 1.3,
-                    ),
-                    children: [
-                      const TextSpan(text: 'Halo, '),
-                      TextSpan(
-                        text: companyName,
-                        style: const TextStyle(fontWeight: FontWeight.w700),
+                // Company Avatar
+                Container(
+                  width: 56,
+                  height: 56,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    shape: BoxShape.circle,
+                    border: Border.all(color: Colors.white.withValues(alpha: 0.35), width: 2),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.05),
+                        blurRadius: 8,
+                        offset: const Offset(0, 2),
                       ),
-                      const TextSpan(text: ' 👋'),
                     ],
                   ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  'Kelola recruitment perusahaanmu.',
-                  style: GoogleFonts.inter(
-                    fontSize: 12,
-                    color: AppColors.textSecondary,
+                  child: const Center(
+                    child: Icon(
+                      Icons.apartment_rounded,
+                      color: Color(0xFFFF5E14),
+                      size: 28,
+                    ),
                   ),
+                ),
+                const SizedBox(width: 16),
+                
+                // Greeting Text
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        _getGreeting(),
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        companyName,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: -0.2,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        'Kelola rekrutmen perusahaanmu',
+                        style: TextStyle(
+                          fontSize: 12.5,
+                          color: Colors.white.withValues(alpha: 0.9),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                
+                // Notification Bell (White tint)
+                Theme(
+                  data: Theme.of(context).copyWith(
+                    iconTheme: const IconThemeData(color: Colors.white),
+                  ),
+                  child: const NotificationBell(unreadCount: 0),
                 ),
               ],
             ),
           ),
-
-          // Notification bell
-          const NotificationBell(unreadCount: 0),
         ],
       ),
     );

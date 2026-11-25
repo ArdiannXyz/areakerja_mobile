@@ -25,7 +25,7 @@ class _KoinPageState extends State<KoinPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: const Color(0xFFF1F3F5),
       body: BlocConsumer<KoinBloc, KoinState>(
         listener: (context, state) {
           if (state is KoinError) {

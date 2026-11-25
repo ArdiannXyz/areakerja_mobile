@@ -46,7 +46,7 @@ class _DashboardPerusahaanPageState extends State<DashboardPerusahaanPage> {
           statusBarIconBrightness: Brightness.dark,
         ),
         child: Scaffold(
-          backgroundColor: AppColors.background,
+          backgroundColor: const Color(0xFFF8FAFC),
           // IndexedStack mempertahankan state tiap tab
           body: IndexedStack(
             index: _currentIndex,
@@ -90,58 +90,94 @@ class _CompanyBottomNav extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    const int itemCount = 5;
+    const activeColor = Color(0xFFFF5E14);
+
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
-        border: Border(top: BorderSide(color: AppColors.border, width: 1)),
-        boxShadow: const [
+        border: Border(
+          top: BorderSide(color: Colors.black.withValues(alpha: 0.05), width: 1),
+        ),
+        boxShadow: [
           BoxShadow(
-            color: Color(0x0A0F172A),
-            blurRadius: 16,
-            offset: Offset(0, -4),
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 14,
+            offset: const Offset(0, -3),
           ),
         ],
       ),
       child: SafeArea(
         top: false,
         child: SizedBox(
-          height: 60,
-          child: Row(
+          height: 66,
+          child: Stack(
             children: [
-              _NavItem(
-                icon: Icons.home_outlined,
-                iconActive: Icons.home_rounded,
-                label: 'Home',
-                isActive: currentIndex == 0,
-                onTap: () => onTap(0),
+              // 1. Sliding Active Capsule Highlight Background (Exact Grid Alignment)
+              AnimatedAlign(
+                duration: const Duration(milliseconds: 320),
+                curve: Curves.fastOutSlowIn,
+                alignment: Alignment(-1.0 + (currentIndex * (2.0 / (itemCount - 1))), 0.0),
+                child: FractionallySizedBox(
+                  widthFactor: 1.0 / itemCount,
+                  heightFactor: 1.0,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            activeColor.withValues(alpha: 0.15),
+                            activeColor.withValues(alpha: 0.07),
+                          ],
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                        ),
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(
+                          color: activeColor.withValues(alpha: 0.18),
+                          width: 1,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
               ),
-              _NavItem(
-                icon: Icons.work_outline_rounded,
-                iconActive: Icons.work_rounded,
-                label: 'Lowongan',
-                isActive: currentIndex == 1,
-                onTap: () => onTap(1),
-              ),
-              _NavItem(
-                icon: Icons.people_outline_rounded,
-                iconActive: Icons.people_rounded,
-                label: 'Pelamar',
-                isActive: currentIndex == 2,
-                onTap: () => onTap(2),
-              ),
-              _NavItem(
-                icon: Icons.monetization_on_outlined,
-                iconActive: Icons.monetization_on_rounded,
-                label: 'Koin',
-                isActive: currentIndex == 3,
-                onTap: () => onTap(3),
-              ),
-              _NavItem(
-                icon: Icons.person_outline_rounded,
-                iconActive: Icons.person_rounded,
-                label: 'Profil',
-                isActive: currentIndex == 4,
-                onTap: () => onTap(4),
+
+              // 2. Navigation Items Row
+              Row(
+                children: [
+                  _buildNavItem(
+                    index: 0,
+                    label: 'Beranda',
+                    activeIcon: Icons.home_rounded,
+                    inactiveIcon: Icons.home_outlined,
+                  ),
+                  _buildNavItem(
+                    index: 1,
+                    label: 'Lowongan',
+                    activeIcon: Icons.work_rounded,
+                    inactiveIcon: Icons.work_outline_rounded,
+                  ),
+                  _buildNavItem(
+                    index: 2,
+                    label: 'Pelamar',
+                    activeIcon: Icons.people_rounded,
+                    inactiveIcon: Icons.people_outline_rounded,
+                  ),
+                  _buildNavItem(
+                    index: 3,
+                    label: 'Koin',
+                    activeIcon: Icons.monetization_on_rounded,
+                    inactiveIcon: Icons.monetization_on_outlined,
+                  ),
+                  _buildNavItem(
+                    index: 4,
+                    label: 'Profil',
+                    activeIcon: Icons.person_rounded,
+                    inactiveIcon: Icons.person_outline_rounded,
+                  ),
+                ],
               ),
             ],
           ),
@@ -149,57 +185,76 @@ class _CompanyBottomNav extends StatelessWidget {
       ),
     );
   }
-}
 
-class _NavItem extends StatelessWidget {
-  final IconData icon;
-  final IconData iconActive;
-  final String label;
-  final bool isActive;
-  final VoidCallback onTap;
+  Widget _buildNavItem({
+    required int index,
+    required String label,
+    required IconData activeIcon,
+    required IconData inactiveIcon,
+  }) {
+    final isSelected = currentIndex == index;
+    const activeColor = Color(0xFFFF5E14);
+    const inactiveColor = Color(0xFF64748B);
 
-  const _NavItem({
-    required this.icon,
-    required this.iconActive,
-    required this.label,
-    required this.isActive,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
     return Expanded(
-      child: InkWell(
-        onTap: onTap,
-        splashColor: AppColors.primarySurface,
-        highlightColor: Colors.transparent,
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
-          curve: Curves.easeInOut,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              AnimatedSwitcher(
-                duration: const Duration(milliseconds: 200),
-                transitionBuilder: (child, anim) =>
-                    ScaleTransition(scale: anim, child: child),
-                child: Icon(
-                  isActive ? iconActive : icon,
-                  key: ValueKey(isActive),
-                  color: isActive ? AppColors.primary : AppColors.textMuted,
-                  size: 24,
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () => onTap(index),
+          splashColor: activeColor.withValues(alpha: 0.12),
+          highlightColor: Colors.transparent,
+          borderRadius: BorderRadius.circular(16),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 6),
+            child: Column(
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                AnimatedScale(
+                  scale: isSelected ? 1.10 : 1.0,
+                  duration: const Duration(milliseconds: 280),
+                  curve: Curves.easeOutBack,
+                  child: AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 220),
+                    switchInCurve: Curves.easeOut,
+                    switchOutCurve: Curves.easeIn,
+                    transitionBuilder: (child, anim) => ScaleTransition(
+                      scale: anim,
+                      child: FadeTransition(
+                        opacity: anim,
+                        child: child,
+                      ),
+                    ),
+                    child: Icon(
+                      isSelected ? activeIcon : inactiveIcon,
+                      key: ValueKey(isSelected),
+                      color: isSelected ? activeColor : inactiveColor,
+                      size: 24,
+                    ),
+                  ),
                 ),
-              ),
-              const SizedBox(height: 3),
-              Text(
-                label,
-                style: GoogleFonts.poppins(
-                  fontSize: 10,
-                  fontWeight: isActive ? FontWeight.w600 : FontWeight.w400,
-                  color: isActive ? AppColors.primary : AppColors.textMuted,
+                const SizedBox(height: 3),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 2),
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: AnimatedDefaultTextStyle(
+                      duration: const Duration(milliseconds: 240),
+                      curve: Curves.easeInOut,
+                      style: TextStyle(
+                        fontFamily: 'Inter',
+                        fontSize: 10.5,
+                        fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                        color: isSelected ? activeColor : inactiveColor,
+                        letterSpacing: isSelected ? -0.15 : -0.1,
+                      ),
+                      maxLines: 1,
+                      child: Text(label),
+                    ),
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

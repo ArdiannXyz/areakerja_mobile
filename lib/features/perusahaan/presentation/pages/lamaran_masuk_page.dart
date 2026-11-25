@@ -26,7 +26,7 @@ class _LamaranMasukPageState extends State<LamaranMasukPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: const Color(0xFFF1F3F5),
       body: BlocBuilder<PerusahaanBloc, PerusahaanState>(
         builder: (context, state) {
           return CustomScrollView(

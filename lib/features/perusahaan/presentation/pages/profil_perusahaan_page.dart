@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_dimensions.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
@@ -28,18 +28,13 @@ class _ProfilPerusahaanPageState extends State<ProfilPerusahaanPage> {
     return BlocConsumer<AuthBloc, AuthState>(
       listener: (context, state) {
         if (state is Unauthenticated) {
-          Navigator.of(context).pushNamedAndRemoveUntil(
-            '/login',
-            (route) => false,
-          );
+          Navigator.of(context).pushNamedAndRemoveUntil('/login', (route) => false);
         }
       },
       builder: (context, state) {
         final user = state is Authenticated ? state.user : null;
-        final companyName =
-            user?.companyName ?? user?.name ?? 'Perusahaan Mitra';
-        final email = user?.email ?? '-';
-
+        final companyName = user?.companyName ?? user?.name ?? 'Perusahaan Mitra';
+        
         return BlocConsumer<PerusahaanBloc, PerusahaanState>(
           listener: (context, perusahaanState) {
             if (perusahaanState is PerusahaanError) {
@@ -53,43 +48,76 @@ class _ProfilPerusahaanPageState extends State<ProfilPerusahaanPage> {
           },
           builder: (context, perusahaanState) {
             return Scaffold(
-              backgroundColor: AppColors.background,
-          body: CustomScrollView(
-            slivers: [
-              SliverAppBar(
-                backgroundColor: Colors.white,
-                elevation: 0,
-                pinned: true,
-                title: Text(
-                  'Profil Perusahaan',
-                  style: GoogleFonts.poppins(
-                    fontSize: 17,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.textPrimary,
-                  ),
-                ),
-                bottom: PreferredSize(
-                  preferredSize: const Size.fromHeight(1),
-                  child: Divider(height: 1, color: AppColors.border),
-                ),
-              ),
+              backgroundColor: const Color(0xFFF1F3F5),
+              body: Column(
+                children: [
+                  // 1. TOP ORANGE HEADER SECTION
+                  _buildOrangeHeader(context, companyName, null),
 
-              SliverPadding(
-                padding: const EdgeInsets.all(AppDimensions.spaceXL),
-                sliver: SliverList(
-                  delegate: SliverChildListDelegate([
-                    // Profile Hero Card
-                    _buildProfileCard(companyName, email),
-                    const SizedBox(height: AppDimensions.space2XL),
+                  // 2. PROFILE MENU LIST ITEMS
+                  Expanded(
+                    child: ListView(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                      children: [
+                        // Data Perusahaan
+                        _buildProfileCard(
+                          icon: Icons.business_outlined,
+                          title: 'Data Perusahaan',
+                          onTap: () {
+                            if (perusahaanState is ProfileLoaded) {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (_) => BlocProvider.value(
+                                    value: context.read<PerusahaanBloc>(),
+                                    child: EditProfilPerusahaanPage(profile: perusahaanState.profile),
+                                  ),
+                                ),
+                              );
+                            }
+                          },
+                        ),
+                        const SizedBox(height: 10),
 
-                        // Menu Items
-                        _buildMenuSection(context, perusahaanState),
-                        const SizedBox(height: AppDimensions.space2XL),
+                        // Ubah Kata Sandi
+                        _buildProfileCard(
+                          icon: Icons.lock_outline_rounded,
+                          title: 'Ubah Kata Sandi',
+                          onTap: () {
+                            // TODO: Navigate to ubah kata sandi
+                          },
+                        ),
+                        const SizedBox(height: 10),
 
-                        // Logout
-                        _buildLogoutButton(context),
-                        const SizedBox(height: AppDimensions.spaceXL),
-                      ]),
+                        // Notifikasi
+                        _buildProfileCard(
+                          icon: Icons.notifications_outlined,
+                          title: 'Notifikasi',
+                          onTap: () {
+                            Navigator.of(context).pushNamed('/notifikasi');
+                          },
+                        ),
+                        const SizedBox(height: 10),
+                        
+                        // Bantuan & FAQ
+                        _buildProfileCard(
+                          icon: Icons.help_outline_rounded,
+                          title: 'Bantuan & FAQ',
+                          onTap: () {
+                            // TODO: Navigate to FAQ
+                          },
+                        ),
+                        const SizedBox(height: 10),
+
+                        // Keluar
+                        _buildProfileCard(
+                          icon: Icons.logout_rounded,
+                          title: 'Keluar',
+                          isDanger: true,
+                          hasChevron: false,
+                          onTap: () => _showLogoutDialog(context),
+                        ),
+                        const SizedBox(height: 20),
+                      ],
                     ),
                   ),
                 ],
@@ -101,79 +129,80 @@ class _ProfilPerusahaanPageState extends State<ProfilPerusahaanPage> {
     );
   }
 
-  Widget _buildProfileCard(String companyName, String email) {
+  // =========================================================================
+  // 1. TOP ORANGE HEADER
+  // =========================================================================
+  Widget _buildOrangeHeader(BuildContext context, String companyName, String? avatarUrl) {
     return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppColors.border),
-        boxShadow: const [
-          BoxShadow(
-            color: Color(0x060F172A),
-            blurRadius: 10,
-            offset: Offset(0, 4),
-          ),
-        ],
+      width: double.infinity,
+      color: const Color(0xFFFF5E14),
+      padding: EdgeInsets.only(
+        top: MediaQuery.of(context).padding.top + 20,
+        left: 24,
+        right: 24,
+        bottom: 26,
       ),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
+          // Profile Avatar Circle
           Container(
-            width: 64,
-            height: 64,
+            width: 72,
+            height: 72,
             decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                colors: [Color(0xFFFF6B00), Color(0xFFFF9140)],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-              borderRadius: BorderRadius.circular(18),
+              shape: BoxShape.circle,
+              border: Border.all(color: Colors.white.withValues(alpha: 0.35), width: 2),
+              color: Colors.white.withValues(alpha: 0.2),
             ),
-            child: const Icon(
-              Icons.apartment_rounded,
-              color: Colors.white,
-              size: 32,
+            child: ClipOval(
+              child: avatarUrl != null && avatarUrl.isNotEmpty
+                  ? Image.network(
+                      avatarUrl,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) => _buildDefaultAvatar(),
+                    )
+                  : _buildDefaultAvatar(),
             ),
           ),
-          const SizedBox(width: 16),
+          const SizedBox(width: 18),
+
+          // User Name & Subtitle
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
               children: [
-                Text(
-                  companyName,
-                  style: GoogleFonts.poppins(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.textPrimary,
-                    height: 1.3,
-                  ),
-                ),
-                const SizedBox(height: 3),
-                Text(
-                  email,
-                  style: GoogleFonts.inter(
-                    fontSize: 13,
-                    color: AppColors.textSecondary,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 3,
-                  ),
-                  decoration: BoxDecoration(
-                    color: AppColors.primarySurface,
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Text(
-                    'Perusahaan',
-                    style: GoogleFonts.poppins(
-                      fontSize: 10.5,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.primaryDark,
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Flexible(
+                      child: Text(
+                        companyName,
+                        style: const TextStyle(
+                          fontSize: 21,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                          letterSpacing: -0.2,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
+                    const SizedBox(width: 4),
+                    const Icon(
+                      Icons.keyboard_arrow_down_rounded,
+                      color: Colors.white,
+                      size: 24,
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  'Perusahaan Mitra',
+                  style: TextStyle(
+                    fontSize: 13,
+                    color: Colors.white.withValues(alpha: 0.9),
+                    fontWeight: FontWeight.w400,
                   ),
                 ),
               ],
@@ -184,138 +213,99 @@ class _ProfilPerusahaanPageState extends State<ProfilPerusahaanPage> {
     );
   }
 
-  Widget _buildMenuSection(BuildContext context, PerusahaanState state) {
-    final menuItems = [
-      _MenuItem(
-        icon: Icons.business_outlined,
-        label: 'Data Perusahaan',
-        onTap: () {
-          if (state is ProfileLoaded) {
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (_) => BlocProvider.value(
-                  value: context.read<PerusahaanBloc>(),
-                  child: EditProfilPerusahaanPage(profile: state.profile),
-                ),
-              ),
-            );
-          }
-        },
-      ),
-      _MenuItem(
-        icon: Icons.lock_outline_rounded,
-        label: 'Ubah Kata Sandi',
-        onTap: () {
-          // TODO: Navigate to ubah kata sandi
-        },
-      ),
-      _MenuItem(
-        icon: Icons.notifications_outlined,
-        label: 'Notifikasi',
-        onTap: () {
-          Navigator.of(context).pushNamed('/notifikasi');
-        },
-      ),
-      _MenuItem(
-        icon: Icons.help_outline_rounded,
-        label: 'Bantuan & FAQ',
-        onTap: () {
-          // TODO: Navigate to FAQ
-        },
-      ),
-    ];
-
+  Widget _buildDefaultAvatar() {
     return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.border),
-        boxShadow: const [
-          BoxShadow(
-            color: Color(0x060F172A),
-            blurRadius: 8,
-            offset: Offset(0, 2),
-          ),
-        ],
+      color: Colors.white,
+      child: const Center(
+        child: Icon(
+          Icons.apartment_rounded,
+          color: Color(0xFFFF5E14),
+          size: 36,
+        ),
       ),
-      child: Column(
-        children: menuItems.asMap().entries.map((entry) {
-          final index = entry.key;
-          final item = entry.value;
-          final isLast = index == menuItems.length - 1;
-          return Column(
+    );
+  }
+
+  // =========================================================================
+  // 2. PROFILE MENU CARD TILE
+  // =========================================================================
+  Widget _buildProfileCard({
+    required IconData icon,
+    required String title,
+    required VoidCallback onTap,
+    bool isDanger = false,
+    bool hasChevron = true,
+  }) {
+    final iconColor = isDanger ? const Color(0xFFEF4444) : const Color(0xFF475569);
+    final textColor = isDanger ? const Color(0xFFEF4444) : const Color(0xFF1E293B);
+    final splashColor = isDanger
+        ? const Color(0xFFEF4444).withValues(alpha: 0.1)
+        : const Color(0xFFFF5E14).withValues(alpha: 0.08);
+
+    return Material(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(14),
+      child: InkWell(
+        onTap: () {
+          HapticFeedback.selectionClick();
+          onTap();
+        },
+        splashColor: splashColor,
+        highlightColor: splashColor.withValues(alpha: 0.04),
+        borderRadius: BorderRadius.circular(14),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 15),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: Colors.black.withValues(alpha: 0.04)),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.02),
+                blurRadius: 8,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: Row(
             children: [
-              InkWell(
-                onTap: item.onTap,
-                borderRadius: BorderRadius.vertical(
-                  top: index == 0 ? const Radius.circular(16) : Radius.zero,
-                  bottom: isLast ? const Radius.circular(16) : Radius.zero,
+              Container(
+                width: 36,
+                height: 36,
+                decoration: BoxDecoration(
+                  color: isDanger ? const Color(0xFFFEF2F2) : const Color(0xFFF8FAFC),
+                  borderRadius: BorderRadius.circular(10),
                 ),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 14,
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(item.icon, size: 20, color: AppColors.textSecondary),
-                      const SizedBox(width: 14),
-                      Expanded(
-                        child: Text(
-                          item.label,
-                          style: GoogleFonts.inter(
-                            fontSize: 14,
-                            color: AppColors.textPrimary,
-                          ),
-                        ),
-                      ),
-                      const Icon(
-                        Icons.chevron_right_rounded,
-                        size: 18,
-                        color: AppColors.textMuted,
-                      ),
-                    ],
+                child: Center(
+                  child: Icon(icon, color: iconColor, size: 20),
+                ),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: 14.5,
+                    fontWeight: isDanger ? FontWeight.w600 : FontWeight.w500,
+                    color: textColor,
                   ),
                 ),
               ),
-              if (!isLast)
-                Divider(
-                  height: 1,
-                  color: AppColors.border,
-                  indent: 50,
+              if (hasChevron)
+                const Icon(
+                  Icons.chevron_right_rounded,
+                  color: Color(0xFF94A3B8),
+                  size: 22,
                 ),
             ],
-          );
-        }).toList(),
-      ),
-    );
-  }
-
-  Widget _buildLogoutButton(BuildContext context) {
-    return SizedBox(
-      width: double.infinity,
-      child: OutlinedButton.icon(
-        onPressed: () => _showLogoutDialog(context),
-        style: OutlinedButton.styleFrom(
-          foregroundColor: AppColors.danger,
-          side: const BorderSide(color: AppColors.danger),
-          padding: const EdgeInsets.symmetric(vertical: 14),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-        ),
-        icon: const Icon(Icons.logout_rounded, size: 18),
-        label: Text(
-          'Keluar dari Akun',
-          style: GoogleFonts.poppins(
-            fontSize: 14,
-            fontWeight: FontWeight.w600,
           ),
         ),
       ),
     );
   }
 
+  // =========================================================================
+  // 3. LOGOUT DIALOG
+  // =========================================================================
   void _showLogoutDialog(BuildContext context) {
     showDialog(
       context: context,
@@ -331,6 +321,7 @@ class _ProfilPerusahaanPageState extends State<ProfilPerusahaanPage> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
+              // Red Logout Icon (Left pointing arrow)
               Transform.flip(
                 flipX: true,
                 child: const Icon(
@@ -340,20 +331,25 @@ class _ProfilPerusahaanPageState extends State<ProfilPerusahaanPage> {
                 ),
               ),
               const SizedBox(height: 16),
-              Text(
+
+              // Confirmation Text
+              const Text(
                 'Apakah Anda yakin ingin keluar dari\nAreaKerja.com?',
                 textAlign: TextAlign.center,
-                style: GoogleFonts.inter(
+                style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
-                  color: AppColors.textPrimary,
+                  color: Color(0xFF1E293B),
                   height: 1.4,
                 ),
               ),
               const SizedBox(height: 20),
+
+              // Action Buttons Row (Ya - Green, Tidak - Red)
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
+                  // Button "Ya"
                   SizedBox(
                     width: 88,
                     height: 38,
@@ -365,14 +361,15 @@ class _ProfilPerusahaanPageState extends State<ProfilPerusahaanPage> {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
                         ),
+                        padding: EdgeInsets.zero,
                       ),
                       onPressed: () {
                         Navigator.of(ctx).pop();
                         context.read<AuthBloc>().add(const AuthLogoutRequested());
                       },
-                      child: Text(
+                      child: const Text(
                         'Ya',
-                        style: GoogleFonts.poppins(
+                        style: TextStyle(
                           fontSize: 13.5,
                           fontWeight: FontWeight.bold,
                         ),
@@ -380,6 +377,8 @@ class _ProfilPerusahaanPageState extends State<ProfilPerusahaanPage> {
                     ),
                   ),
                   const SizedBox(width: 14),
+
+                  // Button "Tidak"
                   SizedBox(
                     width: 88,
                     height: 38,
@@ -391,11 +390,12 @@ class _ProfilPerusahaanPageState extends State<ProfilPerusahaanPage> {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
                         ),
+                        padding: EdgeInsets.zero,
                       ),
                       onPressed: () => Navigator.of(ctx).pop(),
-                      child: Text(
+                      child: const Text(
                         'Tidak',
-                        style: GoogleFonts.poppins(
+                        style: TextStyle(
                           fontSize: 13.5,
                           fontWeight: FontWeight.bold,
                         ),
@@ -410,16 +410,4 @@ class _ProfilPerusahaanPageState extends State<ProfilPerusahaanPage> {
       ),
     );
   }
-}
-
-class _MenuItem {
-  final IconData icon;
-  final String label;
-  final VoidCallback? onTap;
-
-  const _MenuItem({
-    required this.icon,
-    required this.label,
-    this.onTap,
-  });
 }

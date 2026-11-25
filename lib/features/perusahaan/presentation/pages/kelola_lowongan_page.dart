@@ -28,7 +28,7 @@ class _KelolaLowonganPageState extends State<KelolaLowonganPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: const Color(0xFFF1F3F5),
       body: BlocConsumer<PerusahaanBloc, PerusahaanState>(
         listener: (context, state) {
           if (state is JobCreated || state is JobUpdated) {
